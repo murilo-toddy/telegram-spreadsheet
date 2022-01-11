@@ -1,5 +1,5 @@
 from config import bot, ss
-
+from commands import *
 
 print("[!] Bot loaded")
 bot.polling()

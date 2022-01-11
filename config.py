@@ -17,7 +17,7 @@ subsystems = {
     "sw": 447316715
 }
 
-ss = Spreadsheet(SHEET_NAME, SHEET_SCOPE, SHEET_AUTH_FILE, debug)
+ss: Spreadsheet = Spreadsheet(SHEET_NAME, SHEET_SCOPE, SHEET_AUTH_FILE, debug)
 for subsystem, sheet_id in subsystems.items(): 
     ss.add_sheet(subsystem, sheet_id)
 

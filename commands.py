@@ -1,5 +1,8 @@
 from config import bot, ss
 
-@bot.message_handler(commands=["ss"])
-def ss(message):
-    bot.send_message(message, ss.get_all_cells())
+def log_command(cmd: str): print(f"[!!] Command {cmd} called")
+
+@bot.message_handler(commands=["getinfo"])
+def getinfo(message):
+    log_command("getinfo")
+    bot.reply_to(message, ss.sheet("sw").get_all_cells())
