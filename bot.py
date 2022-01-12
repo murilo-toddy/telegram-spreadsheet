@@ -1,6 +1,6 @@
 from telegram.ext import Updater
 from dotenv import load_dotenv
-import os, commands
+import os, commands.handler as handler
 
 if os.path.isfile("./.env"): 
     load_dotenv()
@@ -12,4 +12,4 @@ else:
 bot = Updater(TELEGRAM_TOKEN)
 dsp = bot.dispatcher
 
-commands.register_commands(dsp)
+handler.register_commands(dsp)
