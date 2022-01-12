@@ -99,8 +99,11 @@ def subsystem_generic(update: Update, ctx: CallbackContext, sub: str) -> None:
         
 def query_handler(update: Update, ctx: CallbackContext):
     query = update.callback_query.data
-    print(query)
-    print(update.callback_query.answer())
+    update.callback_query.answer()
+    [sub, func] = query.split(" ")
+    print(sub)
+    print(func)
+    
 
 
     
