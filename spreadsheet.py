@@ -15,10 +15,12 @@ class Spreadsheet:
 
         if self.__debug: print("[!] Connected do spreadsheet")
 
+    # Cadastra uma nova aba da planilha com base no ID
     def add_sheet(self, sheet_name: str, sheet_id: str) -> None:
         self.sheets[sheet_name] = self.ss.get_worksheet_by_id(sheet_id)
         if self.__debug: print(f"[!!] Added sheet {sheet_name}")
 
+    # Coleta todas as informações da planilha
     def sheet(self, sheet_name: str) -> gspread.worksheet.Worksheet:
         return self.sheets[sheet_name]
 
