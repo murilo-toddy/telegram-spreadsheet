@@ -1,3 +1,7 @@
+from telegram.inline.inlinekeyboardbutton import InlineKeyboardButton
+from telegram.inline.inlinekeyboardmarkup import InlineKeyboardMarkup
+from telegram.keyboardbutton import KeyboardButton
+from telegram.replykeyboardmarkup import ReplyKeyboardMarkup
 import commands.handler as handler
 from spreadsheet import ss
 from telegram import Update, ParseMode
@@ -24,10 +28,10 @@ def sw(update: Update, ctx: CallbackContext) -> None:
 
 
 def get_task_lister_text(subsystem: str) -> str:
-    todo_tasks = "\n".join([f"{index+1} - {row[0]}" 
+    todo_tasks = "\n".join([f"{index+1} - {row[1]}" 
                             for index, row in enumerate(
                                 row for row in ss.sheet(subsystem).get_all_values()
-                                if row[1] in ["Fazendo", "A fazer"] and row[0])])
+                                if row[2] != "Concluído" and row[1])])
     
     return (f"<b>Subsistema: {subsystems[subsystem]['name']}</b>\n\n"
                 "<u>Tarefas:</u>\n"
@@ -47,19 +51,28 @@ def subsystem_task_lister(update: Update, ctx: CallbackContext, sub: str, args: 
 def get_default_text(sub: str) -> str:
     return (
             f"<b>Subsistema: {subsystems[sub]['name']}</b>\n"
-            f"<u>Tarefas:</u> {len(ss.sheet(sub).get_all_values())}\n\n"
+            f"<u>Tarefas:</u> {len(ss.sheet(sub).get_all_values()[1:])}\n\n"
             "<u>Funções</u>\n"
-            "<code>l</code> - Listar tarefas\n"
-            "<code>i</code> - Iniciar tarefa\n"
-            "<code>c</code> - Concluir tarefa\n"
-            "<code>a</code> - Adicionar tarefa\n"
-            "<code>u</code> - Atualizar tarefa"
+            "<code>l</code> Listar tarefas\n"
+            "<code>i</code> Iniciar tarefa\n"
+            "<code>c</code> Concluir tarefa\n"
+            "<code>a</code> Adicionar tarefa\n"
+            "<code>u</code> Atualizar tarefa"
         )
 
 
 def subsystem_generic(update: Update, ctx: CallbackContext, sub: str) -> None:
     if not ctx.args:
-        update.message.reply_text(get_default_text(sub), parse_mode=ParseMode.HTML)
+        buttons = [
+            [InlineKeyboardButton("Listar tarefas",   callback_data=f"{sub} list")],
+            [InlineKeyboardButton("Iniciar tarefa",   callback_data=f"{sub} start")],
+            [InlineKeyboardButton("Concluir tarefa",  callback_data=f"{sub} conclude")],
+            [InlineKeyboardButton("Adicionar tarefa", callback_data=f"{sub} add")],
+            [InlineKeyboardButton("Atualizar tarefa", callback_data=f"{sub} update")]
+        ]
+        ctx.bot.send_message(chat_id=update.effective_chat.id, text=get_default_text(sub), 
+                            reply_markup=InlineKeyboardMarkup(buttons), parse_mode=ParseMode.HTML)
+        # update.message.reply_text(get_default_text(sub), parse_mode=ParseMode.HTML)
 
     else:
         function = ctx.args[0]
@@ -84,7 +97,10 @@ def subsystem_generic(update: Update, ctx: CallbackContext, sub: str) -> None:
             print("update task")
         
         
-
+def query_handler(update: Update, ctx: CallbackContext):
+    query = update.callback_query.data
+    print(query)
+    print(update.callback_query.answer())
 
 
     
