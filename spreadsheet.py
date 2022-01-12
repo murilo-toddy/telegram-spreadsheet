@@ -1,6 +1,20 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
+SHEET_AUTH_FILE = 'client_secret.json'
+SHEET_NAME = "Planejamento Manufatura T-06 Prime"
+SHEET_SCOPE = [
+        'https://www.googleapis.com/auth/drive',
+        'https://www.googleapis.com/auth/drive.file'
+    ]
+
+subsystems = {
+    "bt": 1546038790,
+    "pt": 1047261973,
+    "hw": 0,
+    "sw": 447316715
+}
+
 class Spreadsheet:
     def __init__(self, sheet_name: str, scope: list, auth_file: str, debug: bool):
         self.__debug = debug
@@ -25,7 +39,10 @@ class Spreadsheet:
         return self.sheets[sheet_name]
 
 
-
+# Instancia a planilha
+ss: Spreadsheet = Spreadsheet(SHEET_NAME, SHEET_SCOPE, SHEET_AUTH_FILE, True)
+for subsystem, sheet_id in subsystems.items(): 
+    ss.add_sheet(subsystem, sheet_id)
     
 
 
