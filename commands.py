@@ -1,14 +1,15 @@
-from config import bot, ss
+from spreadsheet import ss
+from telegram import Update
+from telegram.ext import CallbackContext, CommandHandler
 
 def log_command(cmd: str): print(f"[!!] Command {cmd} called")
 
-@bot.message_handler(commands=["getinfo"])
-def getinfo(message):
-    log_command("getinfo")
-    bot.reply_to(message, str(ss.sheet("hw").get_all_values()))
+def register_commands(dsp):
+    dsp.add_handler(CommandHandler("sw", sw))
 
 
-@bot.message_handler(commands=["software", "sw"])
-def sw(message):
+def sw(update: Update, ctx: CallbackContext) -> None:
+    task = " ".join(ctx.args)
+    print(task)
     log_command("software")
-    bot.reply_to(message, "\n".join([row[0] for row in ss.sheet("sw").get_all_values()]))
+    update.message.reply_text("\n".join([row[0] for row in ss.sheet("sw").get_all_values()]))
