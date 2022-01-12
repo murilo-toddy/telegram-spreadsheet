@@ -3,7 +3,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from utils import subsystems
 
 SHEET_AUTH_FILE = 'client_secret.json'
-SHEET_NAME = "Planejamento Manufatura T-06 Prime"
+SHEET_NAME = "Planejamento T-06 Prime"
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1kHx2-Q3H_m3pqm7YHDmMD8SzOJMxPIIw5cwB7vVlMi0/edit#gid=1546038790"
 SHEET_SCOPE = [
         'https://www.googleapis.com/auth/drive',
