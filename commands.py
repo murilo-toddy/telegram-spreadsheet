@@ -12,7 +12,7 @@ def get_listtasks_text(subsystem: str) -> str:
     todo_tasks = "\n".join([f"{index+1} - {row[0]}" 
                             for index, row in enumerate(
                                 row for row in ss.sheet(subsystem).get_all_values()
-                                if row[1] != "Finalizado" and row[0])])
+                                if row[1] in ["Fazendo", "A fazer"] and row[0])])
     
     return (f"<b>Subsistema: {subsystems[subsystem]['name']}</b>\n\n"
                 "<u>Tarefas:</u>\n"
@@ -23,8 +23,11 @@ def get_listtasks_text(subsystem: str) -> str:
 
 
 def sw(update: Update, ctx: CallbackContext) -> None:
-    task = " ".join(ctx.args)
-    print(task)
     log_command("software")
-    
-    update.message.reply_text(get_listtasks_text("sw"), parse_mode=ParseMode.HTML)
+    task = " ".join(ctx.args)
+
+    if not task:
+        update.message.reply_text(get_listtasks_text("sw"), parse_mode=ParseMode.HTML)
+
+    else:
+        print(f"Conclude task {task}")
