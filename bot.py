@@ -1,4 +1,3 @@
-from spreadsheet import Spreadsheet
 from telegram.ext import Updater
 from dotenv import load_dotenv
 import os, commands
