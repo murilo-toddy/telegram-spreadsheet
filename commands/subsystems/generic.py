@@ -1,12 +1,13 @@
-from telegram.inline.inlinekeyboardbutton import InlineKeyboardButton
-from telegram.inline.inlinekeyboardmarkup import InlineKeyboardMarkup
-from telegram.ext import CallbackContext
-from telegram import Update, ParseMode
-from spreadsheet import ss
-from utils import subsystems
 import itertools
 import commands.handler as handler
 import commands.subsystems.task_list as task_list
+from utils import subsystems
+from spreadsheet import ss
+
+from telegram.ext import CallbackContext
+from telegram import (
+    Update, ParseMode, InlineKeyboardButton, InlineKeyboardMarkup
+)
 
 available_functions = ["l", "i", "c", "a"]
 
@@ -56,10 +57,10 @@ def subsystem_generic(update: Update, ctx: CallbackContext, sub: str) -> None:
     
     if not ctx.args:
         buttons = [
-            [InlineKeyboardButton("Listar",    callback_data=f"{sub} l"),
-             InlineKeyboardButton("Adicionar", callback_data=f"{sub} a")], 
-            [InlineKeyboardButton("Concluir",  callback_data=f"{sub} c"),
-             InlineKeyboardButton("Iniciar",   callback_data=f"{sub} i")],
+            [ InlineKeyboardButton("Listar",    callback_data=f"{sub} l"),
+              InlineKeyboardButton("Adicionar", callback_data=f"{sub} a") ], 
+            [ InlineKeyboardButton("Concluir",  callback_data=f"{sub} c"),
+              InlineKeyboardButton("Iniciar",   callback_data=f"{sub} i") ],
         ]
         ctx.bot.send_message(chat_id=update.effective_chat.id, text=get_default_text(sub), 
                             reply_markup=InlineKeyboardMarkup(buttons), parse_mode=ParseMode.HTML)
