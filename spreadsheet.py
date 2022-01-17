@@ -3,12 +3,14 @@ from oauth2client.service_account import ServiceAccountCredentials
 from utils import subsystems
 
 SHEET_AUTH_FILE = 'client_secret.json'
-SHEET_NAME = "Planejamento T-06 Prime"
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1kHx2-Q3H_m3pqm7YHDmMD8SzOJMxPIIw5cwB7vVlMi0/edit#gid=1546038790"
 SHEET_SCOPE = [
         'https://www.googleapis.com/auth/drive',
         'https://www.googleapis.com/auth/drive.file'
     ]
+
+COMMANDS_SHEET_NAME = "Bot Commands"
+ELE_SHEET_NAME = "Planejamento T-06 Prime"
 
 
 class Spreadsheet:
@@ -35,7 +37,11 @@ class Spreadsheet:
         return self.sheets[sheet_name]
 
 
-# Instancia a planilha
-ss: Spreadsheet = Spreadsheet(SHEET_NAME, SHEET_SCOPE, SHEET_AUTH_FILE, True)
+# Planilha de Comandos
+commands: Spreadsheet = Spreadsheet(COMMANDS_SHEET_NAME, SHEET_SCOPE, SHEET_AUTH_FILE, True)
+commands.add_sheet("cmd", 0)
+
+# Planilha da Elétrica
+ss: Spreadsheet = Spreadsheet(ELE_SHEET_NAME, SHEET_SCOPE, SHEET_AUTH_FILE, True)
 for subsystem, info in subsystems.items(): 
     ss.add_sheet(subsystem, info["sheet_id"])
