@@ -1,4 +1,4 @@
-from telegram import Update, ReplyKeyboardMarkup
+from telegram import Update, ReplyKeyboardMarkup, ParseMode
 from telegram.ext import (
     MessageHandler,
     Filters,
@@ -6,7 +6,6 @@ from telegram.ext import (
     CallbackContext, 
     ConversationHandler
 )
-from telegram.parsemode import ParseMode
 
 SUBSYSTEM, PROJECT, TASK, DIFFICULTY, DURATION, DOCUMENTS = range(6)
 
@@ -77,14 +76,14 @@ def cancel(update: Update, ctx: CallbackContext):
 
 
 register_handler = ConversationHandler(
-        entry_points=[CommandHandler('add', add_task)],
-        states={
-            SUBSYSTEM:  [ MessageHandler(Filters.regex('^(bt|pt|hw|sw)$'),  subsystem) ],
-            PROJECT:    [ MessageHandler(Filters.text & ~(Filters.command), project) ],
-            TASK:       [ MessageHandler(Filters.text & ~(Filters.command), task) ],
-            DIFFICULTY: [ MessageHandler(Filters.text & ~(Filters.command), difficulty) ],
-            DURATION:   [ MessageHandler(Filters.text & ~(Filters.command), duration) ],
-            DOCUMENTS:  [ MessageHandler(Filters.text & ~(Filters.command), documents) ], 
-        },
-        fallbacks=[CommandHandler('cancel', cancel)]
-    )
+    entry_points=[CommandHandler('add', add_task)],
+    states={
+        SUBSYSTEM:  [ MessageHandler(Filters.regex('^(bt|pt|hw|sw)$'),  subsystem) ],
+        PROJECT:    [ MessageHandler(Filters.text & ~(Filters.command), project) ],
+        TASK:       [ MessageHandler(Filters.text & ~(Filters.command), task) ],
+        DIFFICULTY: [ MessageHandler(Filters.text & ~(Filters.command), difficulty) ],
+        DURATION:   [ MessageHandler(Filters.text & ~(Filters.command), duration) ],
+        DOCUMENTS:  [ MessageHandler(Filters.text & ~(Filters.command), documents) ], 
+    },
+    fallbacks=[CommandHandler('cancel', cancel)]
+)
