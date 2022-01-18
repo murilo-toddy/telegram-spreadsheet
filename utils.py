@@ -1,4 +1,4 @@
-subsystems = {
+ele_subsystems = {
     "bt": {
         "name": "Baterias",
         "sheet_id": 447316715
@@ -14,5 +14,12 @@ subsystems = {
     "sw": {
         "name": "Software",
         "sheet_id": 367184788
+    }
+}
+
+mec_subsystems = {
+    "ch": {
+        "name": "Chassi",
+        "sheet_id": 447316715
     }
 }
