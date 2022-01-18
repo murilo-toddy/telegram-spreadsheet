@@ -14,7 +14,8 @@ def register_commands(dsp):
     dsp.add_handler(CommandHandler("init", status_updater.start_task))
     dsp.add_handler(CommandHandler("add",  task_register.add_task))
     
-    dsp.add_handler(CommandHandler("refresh", general.update_sheet_commands))
+    dsp.add_handler(CommandHandler("planilha", general.send_sheet))
+    dsp.add_handler(CommandHandler("refresh",  general.update_sheet_commands))
     
     dsp.add_handler(CallbackQueryHandler(generic.query_handler))
     dsp.add_handler(task_register.register_handler)
@@ -23,4 +24,3 @@ def register_commands(dsp):
         dsp.add_handler(CommandHandler(command=cmd[0], callback=general.spreadsheet_return_text))
 
     print("[!] Commands loaded")
-    
