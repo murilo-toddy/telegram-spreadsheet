@@ -12,7 +12,6 @@ def register_commands(dsp):
     dsp.add_handler(CommandHandler("list", task_list.subsystem_task_lister))
     dsp.add_handler(CommandHandler("end",  status_updater.conclude_task))
     dsp.add_handler(CommandHandler("init", status_updater.start_task))
-    dsp.add_handler(CommandHandler("add",  task_register.add_task))
     
     dsp.add_handler(CommandHandler("planilha", general.send_sheet))
     dsp.add_handler(CommandHandler("refresh",  general.update_sheet_commands))
