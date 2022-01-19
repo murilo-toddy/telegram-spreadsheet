@@ -6,7 +6,7 @@ import commands.subsystems.generic as generic
 import commands.general as general
 from spreadsheet import commands
 
-def log_command(cmd: str): print(f" [!!] Command {cmd} called")
+def log_command(cmd: str): print(f"[!!] Command {cmd} called")
 
 def register_commands(dsp):
     dsp.add_handler(CommandHandler("list", task_list.subsystem_task_lister))

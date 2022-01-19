@@ -14,27 +14,27 @@ from telegram.ext import (
 )
 from utils import ele_subsystems, mec_subsystems
 from spreadsheet import ele_ss, mec_ss
-import commands.general as general
+from commands.handler import log_command
+import unidecode
 
 
-SYSTEM, SUBSYSTEM, PROJECT, TASK, DIFFICULTY, DURATION, DOCUMENTS = range(7)
+SYSTEM, SUBSYSTEM, PROJECT, TASK, DIFFICULTY, DURATION, DOC_QUESTION, DOCUMENTS = range(8)
 
-task = {
+task_info = {
     "system": "",
     "subsystem": "",
     "project": "",
+    "new_project": False,
     "task": "",
     "diff": "",
     "duration": "",
     "docs": "",
 }
-new_task = {
-    "ss": None,
-    "dict": None,
-    "task": task
-}
+new_task = { "ss": None, "dict": None, "task": task_info, "proj": "" }
 
-def add_task(update: Update, ctx: CallbackContext):
+
+def add_task(update: Update, ctx: CallbackContext) -> int:
+    log_command("add task")
     system_selector = [[ "ele", "mec" ]]
     update.message.reply_text(
         "<b>Adicionar tarefa</b>\n"
@@ -48,9 +48,9 @@ def add_task(update: Update, ctx: CallbackContext):
     return SYSTEM
 
 
-def system(update: Update, ctx: CallbackContext):
+def system(update: Update, ctx: CallbackContext) -> int:
     system = update.message.text
-    if system == "ele":   subsystem_selector = [[ "bt", "pt" ], [ "hw", "sw" ]]
+    if   system == "ele": subsystem_selector = [[ "bt", "pt" ], [ "hw", "sw" ]]
     elif system == "mec": subsystem_selector = [[ "ch" ]]
     else:
         update.message.reply_text("Sistema não encontrado", reply_markup=ReplyKeyboardRemove())
@@ -74,58 +74,120 @@ def system(update: Update, ctx: CallbackContext):
 def get_active_projects() -> str:
     global new_task
     ss = new_task["ss"].sheet(new_task["task"]["subsystem"])
-    print(ss)
-    return 0
+    data = ss.get_all_values()
+    projects = [f"{index+1} - {row[0]}" 
+                    for index, row in enumerate(row 
+                        for row in data if row[0])]
+    
+    new_task["proj"] = projects
+    return "\n".join(projects)
 
 
-
-def subsystem(update: Update, ctx: CallbackContext):
+def subsystem(update: Update, ctx: CallbackContext) -> int:
     subsystem = update.message.text
     global new_task
     new_task["task"]["subsystem"] = subsystem
-    
-    update.message.reply_text(
+    reply_text = (
         f"<b>Subsistema: {new_task['dict'][subsystem]['name']}</b>\n\n"
-        f"<u>Projetos Ativos</u>\n{get_active_projects()}",
+        "Para adicionar a tarefa a um projeto existente, forneça seu número\n"
+        "Para adicionar um novo projeto, insira o nome deste "
+        "(capitalização e acentuação são importantes)\n\n"
+        f"<u>Projetos Ativos</u>\n{get_active_projects()}"
+    )
+
+    update.message.reply_text(
+        reply_text,
         reply_markup=ReplyKeyboardRemove(),
         parse_mode=ParseMode.HTML
     )
-    
-    print(f"selected {update.message.text}")
     return PROJECT
 
-def project(update: Update, ctx: CallbackContext):
-    user = update.message.from_user
-    update.message.reply_text("projeto")
-    print(f"{user.first_name} selected {update.message.text}")
+
+def project(update: Update, ctx: CallbackContext) -> int:
+    project = update.message.text
+    global new_task
+
+    try:
+        project_number = int(project)
+        new_task["task"]["new_project"] = False
+        new_task["task"]["project"] = new_task["proj"][project_number-1].split(" - ")[1]
+
+    except:
+        new_task["task"]["project"] = project
+        new_task["task"]["new_project"] = True
+    
+    update.message.reply_text(
+        f"Projeto {new_task['task']['project']} selecionado\n"
+        "Insira o nome da tarefa"
+    )
     return TASK
 
-def task(update: Update, ctx: CallbackContext):
-    user = update.message.from_user
-    update.message.reply_text("tarefa")
-    print(f"{user.first_name} selected {update.message.text}")
+
+def task(update: Update, ctx: CallbackContext) -> int:
+    global new_task
+    new_task["task"]["task"] = update.message.text
+    update.message.reply_text("Forneça uma estimativa (0 - 10) para a dificuldade desta tarefa")
     return DIFFICULTY
 
-def difficulty(update: Update, ctx: CallbackContext):
-    user = update.message.from_user
-    update.message.reply_text("diff")
-    print(f"{user.first_name} selected {update.message.text}")
+
+def difficulty(update: Update, ctx: CallbackContext) -> int:
+    try:
+        difficulty = float(update.message.text)
+        if difficulty < 0 or difficulty > 10: raise Exception
+
+    except:
+        update.message.reply_text("Entrada inválida!\n\nA dificuldade deve ser um número entre 1 e 10")
+        return DIFFICULTY
+
+    global new_task
+    new_task["task"]["diff"] = difficulty
+    update.message.reply_text("Forneça uma estimativa de tempo (em semanas) para a realização desta tarefa")
     return DURATION
 
-def duration(update: Update, ctx: CallbackContext):
-    user = update.message.from_user
-    update.message.reply_text("dur")
-    print(f"{user.first_name} selected {update.message.text}")
+
+def duration(update: Update, ctx: CallbackContext) -> int:
+    try:
+        dur = float(update.message.text)
+        if dur < 0: raise Exception
+    except:
+        update.message.reply_text("Entrada inválida!\n\nForneça um número positivo")
+        return DURATION
+    
+    global new_task
+    new_task["task"]["dur"] = dur
+    question = [[ "Sim", "Não" ]]
+    update.message.reply_text(
+        "Gostaria de associar esta tarefa a algum documento?",
+        reply_markup=ReplyKeyboardMarkup(
+            question, one_time_keyboard=True
+        )
+    )
     return DOCUMENTS
 
-def documents(update: Update, ctx: CallbackContext):
-    user = update.message.from_user
-    update.message.reply_text("doc")
-    print(f"{user.first_name} selected {update.message.text}")
+
+def documents_question(update: Update, ctx: CallbackContext) -> int:
+    answer = unidecode.unidecode(update.message.text.lower())
+    if answer == "sim":
+        update.message.reply_text("Forneça o link para o(s) documento(s)")
+    return DOCUMENTS
+
+
+def documents(update: Update, ctx: CallbackContext) -> int:
+    global new_task
+    new_task["task"]["docs"] = update.message.text
+    update.message.reply_text(
+        "<b>Tarefa Adicionada</b>\n\n"
+        f"<i>Subsistema:</i> {new_task['dict'][new_task['task']['subsystem']]['name']}\n"
+        f"<i>Projeto:</i> {new_task['task']['project']}\n"
+        f"<i>Tarefa:</i> {new_task['task']['task']}\n"
+        f"<i>Dificuldade:</i> {new_task['task']['diff']}\n"
+        f"<i>Duração:</i> {new_task['task']['dur']}\n",
+        parse_mode=ParseMode.HTML
+    )
     return ConversationHandler.END
 
 
-def cancel(update: Update, ctx: CallbackContext):
+def cancel(update: Update, ctx: CallbackContext) -> int:
     update.message.reply_text("Processo cancelado")
     return ConversationHandler.END
 
@@ -134,13 +196,14 @@ def cancel(update: Update, ctx: CallbackContext):
 register_handler = ConversationHandler(
         entry_points=[CommandHandler('add', add_task)],
         states={
-            SYSTEM:     [ MessageHandler(Filters.text & ~(Filters.command), system)     ],
-            SUBSYSTEM:  [ MessageHandler(Filters.text & ~(Filters.command), subsystem)  ],
-            PROJECT:    [ MessageHandler(Filters.text & ~(Filters.command), project)    ],
-            TASK:       [ MessageHandler(Filters.text & ~(Filters.command), task)       ],
-            DIFFICULTY: [ MessageHandler(Filters.text & ~(Filters.command), difficulty) ],
-            DURATION:   [ MessageHandler(Filters.text & ~(Filters.command), duration)   ],
-            DOCUMENTS:  [ MessageHandler(Filters.text & ~(Filters.command), documents)  ], 
+            SYSTEM:       [ MessageHandler(Filters.text & ~(Filters.command), system)             ],
+            SUBSYSTEM:    [ MessageHandler(Filters.text & ~(Filters.command), subsystem)          ],
+            PROJECT:      [ MessageHandler(Filters.text & ~(Filters.command), project)            ],
+            TASK:         [ MessageHandler(Filters.text & ~(Filters.command), task)               ],
+            DIFFICULTY:   [ MessageHandler(Filters.text & ~(Filters.command), difficulty)         ],
+            DURATION:     [ MessageHandler(Filters.text & ~(Filters.command), duration)           ],
+            DOC_QUESTION: [ MessageHandler(Filters.text & ~(Filters.command), documents_question) ],
+            DOCUMENTS:    [ MessageHandler(Filters.text & ~(Filters.command), documents)          ], 
         },
         fallbacks=[CommandHandler('cancel', cancel)]
     )
