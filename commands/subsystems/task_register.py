@@ -1,4 +1,9 @@
-from typing import NewType
+# TODO
+# Fix document adding bug
+# Add comment option
+# Add project name and merging
+# Export similar functions to other module
+
 from telegram import (
     Update, 
     ReplyKeyboardMarkup, 
@@ -15,10 +20,13 @@ from telegram.ext import (
 from utils import ele_subsystems, mec_subsystems
 from spreadsheet import ele_ss, mec_ss
 from commands.handler import log_command
-import unidecode
+from unidecode import unidecode
+from gspread import Worksheet
+from datetime import date
 
 
-SYSTEM, SUBSYSTEM, PROJECT, TASK, DIFFICULTY, DURATION, DOC_QUESTION, DOCUMENTS = range(8)
+[SYSTEM, SUBSYSTEM, PROJECT, TASK, DIFFICULTY, 
+    DURATION, DOC_QUESTION, DOCUMENTS, CONFIRMATION] = range(9)
 
 task_info = {
     "system": "",
@@ -154,7 +162,7 @@ def duration(update: Update, ctx: CallbackContext) -> int:
         return DURATION
     
     global new_task
-    new_task["task"]["dur"] = dur
+    new_task["task"]["duration"] = dur
     question = [[ "Sim", "Não" ]]
     update.message.reply_text(
         "Gostaria de associar esta tarefa a algum documento?",
@@ -162,33 +170,82 @@ def duration(update: Update, ctx: CallbackContext) -> int:
             question, one_time_keyboard=True
         )
     )
-    return DOCUMENTS
+    return DOC_QUESTION
 
 
 def documents_question(update: Update, ctx: CallbackContext) -> int:
-    answer = unidecode.unidecode(update.message.text.lower())
+    answer = unidecode(update.message.text.lower())
     if answer == "sim":
-        update.message.reply_text("Forneça o link para o(s) documento(s)")
+        update.message.reply_text("Forneça o link para o(s) documento(s)",
+            reply_markup=ReplyKeyboardRemove())
     return DOCUMENTS
 
 
 def documents(update: Update, ctx: CallbackContext) -> int:
     global new_task
-    new_task["task"]["docs"] = update.message.text
+    new_task["task"]["docs"] = (
+        update.message.text if unidecode(update.message.text.lower()) != "nao" else ""
+    )
+
+    question = [[ "Sim", "Não" ]]
     update.message.reply_text(
-        "<b>Tarefa Adicionada</b>\n\n"
+        "<b>Confirme as informações</b>\n\n"
         f"<i>Subsistema:</i> {new_task['dict'][new_task['task']['subsystem']]['name']}\n"
         f"<i>Projeto:</i> {new_task['task']['project']}\n"
         f"<i>Tarefa:</i> {new_task['task']['task']}\n"
         f"<i>Dificuldade:</i> {new_task['task']['diff']}\n"
-        f"<i>Duração:</i> {new_task['task']['dur']}\n",
-        parse_mode=ParseMode.HTML
+        f"<i>Duração:</i> {new_task['task']['duration']}\n\n"
+        "Deseja adicionar a tarefa?",
+        parse_mode=ParseMode.HTML,
+        reply_markup=ReplyKeyboardMarkup(
+                question, one_time_keyboard=True
+        )
     )
+    return CONFIRMATION
+
+
+def find_project_index(proj, data):
+    for index, p in enumerate(data):
+        if p[0] == proj: return index + 1
+    return -1
+
+
+def add_task_to_sheet():
+    global new_task
+    ss: Worksheet = new_task["ss"].sheet(new_task["task"]["subsystem"])
+    data = ss.get_all_values()
+    if new_task["task"]["new_project"]: 
+        index = 1
+        while data[index][2]: index += 1
+        index += 1 
+    else:
+        index = find_project_index(new_task["task"]["project"], data)
+        while not data[index][0]: index += 1
+        index += 1
+        ss.insert_row([], index=index)
+    
+    task = new_task["task"]
+    ss.update(f"B{index}:J{index}", [[
+        task["task"], "A fazer", "",
+        task["duration"], task["diff"], "", "", "", task["docs"] 
+    ]])
+
+
+def confirmation(update: Update, ctx: CallbackContext) -> int:
+    answer = unidecode(update.message.text.lower())
+    if answer == "sim":
+        add_task_to_sheet()
+        update.message.reply_text("Tarefa adicionada com sucesso", 
+            reply_markup=ReplyKeyboardRemove())
+    else:
+        update.message.reply_text("Processo cancelado",
+            reply_markup=ReplyKeyboardRemove())
     return ConversationHandler.END
 
 
 def cancel(update: Update, ctx: CallbackContext) -> int:
-    update.message.reply_text("Processo cancelado")
+    update.message.reply_text("Processo cancelado",
+        reply_markup=ReplyKeyboardRemove())
     return ConversationHandler.END
 
 
@@ -203,7 +260,8 @@ register_handler = ConversationHandler(
             DIFFICULTY:   [ MessageHandler(Filters.text & ~(Filters.command), difficulty)         ],
             DURATION:     [ MessageHandler(Filters.text & ~(Filters.command), duration)           ],
             DOC_QUESTION: [ MessageHandler(Filters.text & ~(Filters.command), documents_question) ],
-            DOCUMENTS:    [ MessageHandler(Filters.text & ~(Filters.command), documents)          ], 
+            DOCUMENTS:    [ MessageHandler(Filters.text & ~(Filters.command), documents)          ],
+            CONFIRMATION: [ MessageHandler(Filters.text & ~(Filters.command), confirmation)       ]
         },
         fallbacks=[CommandHandler('cancel', cancel)]
     )
