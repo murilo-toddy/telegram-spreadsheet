@@ -1,6 +1,6 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-from utils import ele_subsystems
+from utils import ele_subsystems, mec_subsystems
 from config import COMMANDS_SHEET_ID, ELE_SHEET_ID, MEC_SHEET_ID
 
 SHEET_AUTH_FILE = 'client_secret.json'
@@ -23,7 +23,7 @@ class Spreadsheet:
         self.ss = self.client.open_by_key(sheet_id)
         self.sheets = {}
 
-        if self.__debug: print("[!] Connected do spreadsheet")
+        if self.__debug: print("[!] Connected to spreadsheet")
 
     # Registers new sheet based on its ID
     def add_sheet(self, sheet_name: str, sheet_id: str) -> None:
@@ -46,3 +46,5 @@ for subsystem, info in ele_subsystems.items():
 
 # Mec Spreadsheet
 mec_ss: Spreadsheet = Spreadsheet(MEC_SHEET_ID, SHEET_SCOPE, SHEET_AUTH_FILE, True)
+for subsystem, info in mec_subsystems.items():
+    mec_ss.add_sheet(subsystem, info["sheet_id"])
