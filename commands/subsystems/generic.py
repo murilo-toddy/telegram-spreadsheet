@@ -1,15 +1,22 @@
-import commands.subsystems.task_register as task_register
-import commands.subsystems.task_list as task_list
-from telegram.ext import CallbackContext
-from telegram import Update
+from telegram.ext import CallbackContext, ConversationHandler
+from telegram import ReplyKeyboardRemove, Update
 
 
-def query_handler(update: Update, ctx: CallbackContext) -> None:
-    query = update.callback_query.data
-    [cmd, *args] = query.split(" ")
+def get_default_system_message(mode: str) -> str:
+    return (
+        f"<b>{mode}</b>\n"
+        "Utilize <code>/cancel</code> a qualquer momento para cancelar a operação\n"
+        "Informe o sistema"
+    )
 
-    if cmd == "list":
-        task_list.task_lister(update, ctx, args)
 
-    elif cmd == "add":
-        task_register.add_task(update, ctx)
+def timeout(update: Update, ctx: CallbackContext):
+    update.message.reply_text(
+        "Limite de tempo excedido\nInicie o processo novamente", reply_markup=ReplyKeyboardRemove()
+    )
+    return ConversationHandler.END
+
+
+def cancel(update: Update, ctx: CallbackContext) -> int:
+    update.message.reply_text("Processo cancelado", reply_markup=ReplyKeyboardRemove())
+    return ConversationHandler.END
