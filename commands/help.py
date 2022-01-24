@@ -9,11 +9,20 @@ available_commands = {
         "Envia o link da planilha de comandos do Tupão\n"
         "Para cadastrar um novo comando, basta inserir este e a resposta "
         "de texto esperada na ultima linha.\n"
-        "Para formatações específicas no texto de resposta, use tags <i>HTML</i>\n"
+        "Para formatações específicas no texto de resposta, use tags <i>HTML</i>\n\n"
         "Após inserção do comando na planilha, execute o comando <code>/refresh</code>"
         "para atualizar os comandos internos do Bot."
     ),
-    "list": ("Lista todas as tarefas não concluídas de um subsistema"),
+    "list": (
+        "Lista todas as tarefas não concluídas de um subsistema, com base na planilha "
+        "de atividades deste.\n\n"
+        "As tarefas são listadas separadas por projeto\n\n"
+        "É possível executar <code>/list &lt;subsistema&gt;</code> para "
+        "obter informações de um subsistema imediatamente. O subsistema deve ser fornecido "
+        "através de sua abreviação (i.e. <code>/list sw</code>).\n\n"
+        "Por outro lado, pode-se utilizar <code>/list</code> sem argumentos para receber "
+        "uma lista com os sistemas e subsistemas disponíveis."
+    ),
     "add": ("Adiciona uma nova tarefa na planilha"),
     "start": ("Muda o status de uma tarefa para Em Andamento"),
     "end": ("Muda o status de uma tarefa para finalizado"),

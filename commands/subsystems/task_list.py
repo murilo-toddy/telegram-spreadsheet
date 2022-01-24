@@ -5,7 +5,7 @@ from utils import ele_subsystems, mec_subsystems
 from spreadsheet import ele_ss, mec_ss
 
 
-def get_subtasks(data, pos: int, counter: int) -> bool:
+def get_subtasks(data: list, pos: int, counter: int) -> bool:
     tasks = ""
     i = pos
     while i < len(data) and (not data[i][0] or i == pos):
