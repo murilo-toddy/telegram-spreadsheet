@@ -5,10 +5,9 @@ from config import COMMANDS_SHEET_ID
 import bot
 
 
+# Default message senting method, using HTML format
 def send_message(update: Update, ctx: CallbackContext, text: str) -> None:
-    ctx.bot.send_message(
-        chat_id=update.effective_chat.id, text=text, parse_mode=ParseMode.HTML
-    )
+    ctx.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=ParseMode.HTML)
 
 
 # Gets text from commands listed in Bot Commands spreadsheet
@@ -32,8 +31,7 @@ def send_sheet(update: Update, ctx: CallbackContext) -> None:
         update,
         ctx,
         (
-            "<a href="
-            f"'https://docs.google.com/spreadsheets/d/{COMMANDS_SHEET_ID}/edit#gid=0'>"
+            f"<a href='https://docs.google.com/spreadsheets/d/{COMMANDS_SHEET_ID}/edit#gid=0'>"
             "Planilha de Comandos</a>"
         ),
     )
