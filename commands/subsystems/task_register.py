@@ -14,10 +14,9 @@ from telegram.ext import (
 )
 from utils import ele_subsystems, mec_subsystems
 from spreadsheet import ele_ss, mec_ss
-from commands.handler import log_command
 from unidecode import unidecode
 from gspread import Worksheet
-from datetime import date
+from commands.subsystems.generic import get_default_system_message, timeout, cancel
 
 
 [
@@ -47,12 +46,9 @@ new_task = {"ss": None, "dict": None, "task": task_info, "proj": ""}
 
 
 def add_task(update: Update, ctx: CallbackContext) -> int:
-    log_command("add task")
     system_selector = [["ele", "mec"]]
     update.message.reply_text(
-        "<b>Adicionar tarefa</b>\n"
-        "Utilize <code>/cancel</code> a qualquer momento para cancelar a operação\n\n"
-        "Informe o sistema\n",
+        get_default_system_message("Adicionar tarefa"),
         reply_markup=ReplyKeyboardMarkup(system_selector, one_time_keyboard=True),
         parse_mode=ParseMode.HTML,
     )
@@ -249,11 +245,6 @@ def confirmation(update: Update, ctx: CallbackContext) -> int:
     return ConversationHandler.END
 
 
-def cancel(update: Update, ctx: CallbackContext) -> int:
-    update.message.reply_text("Processo cancelado", reply_markup=ReplyKeyboardRemove())
-    return ConversationHandler.END
-
-
 register_handler = ConversationHandler(
     entry_points=[CommandHandler("add", add_task)],
     states={
@@ -266,6 +257,8 @@ register_handler = ConversationHandler(
         DOC_QUESTION: [MessageHandler(Filters.text & ~(Filters.command), documents_question)],
         DOCUMENTS: [MessageHandler(Filters.text & ~(Filters.command), documents)],
         CONFIRMATION: [MessageHandler(Filters.text & ~(Filters.command), confirmation)],
+        ConversationHandler.TIMEOUT: [MessageHandler(Filters.text | Filters.command, timeout)],
     },
     fallbacks=[CommandHandler("cancel", cancel)],
+    conversation_timeout=30,
 )
