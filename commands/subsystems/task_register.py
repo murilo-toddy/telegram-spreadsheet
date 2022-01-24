@@ -118,8 +118,8 @@ def project(update: Update, ctx: CallbackContext) -> int:
         new_task["task"]["new_project"] = True
 
     update.message.reply_text(
-        f"Projeto {new_task['task']['project']} selecionado\n",
-        "Insira o nome da tarefa\n",
+        f"Projeto {new_task['task']['project']} selecionado\n"
+        "Insira o nome da tarefa\n"
         "Capitalização e acentuação são importantes",
     )
     return TASK
@@ -205,10 +205,10 @@ def add_task_to_sheet():
     ss: Worksheet = new_task["ss"].sheet(new_task["task"]["subsystem"])
     data = ss.get_all_values()
     if new_task["task"]["new_project"]:
-        index = 1
-        while data[index][2]:
-            index += 1
-        index += 1
+        # index = 1
+        # while data[index][2]:
+        #     index += 1
+        index = len(data) + 1
     else:
         index = find_project_index(new_task["task"]["project"], data)
         while not data[index][0]:
@@ -218,9 +218,10 @@ def add_task_to_sheet():
 
     task = new_task["task"]
     ss.update(
-        f"B{index}:J{index}",
+        f"A{index}:J{index}",
         [
             [
+                task["project"],
                 task["task"],
                 "A fazer",
                 "",
