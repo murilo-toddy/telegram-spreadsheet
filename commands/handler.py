@@ -23,6 +23,8 @@ def register_commands(dsp):
     dsp.add_handler(task_register.register_handler)
 
     for cmd in commands.sheet("cmd").get_all_values()[1:]:
-        dsp.add_handler(CommandHandler(command=cmd[0], callback=general.spreadsheet_return_text))
+        dsp.add_handler(
+            CommandHandler(command=cmd[0], callback=general.spreadsheet_return_text)
+        )
 
     print("[!] Commands loaded")

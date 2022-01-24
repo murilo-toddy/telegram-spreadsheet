@@ -38,7 +38,9 @@ class Spreadsheet:
 
 
 # Commands spreadsheet
-commands: Spreadsheet = Spreadsheet(COMMANDS_SHEET_ID, SHEET_SCOPE, SHEET_AUTH_FILE, True)
+commands: Spreadsheet = Spreadsheet(
+    COMMANDS_SHEET_ID, SHEET_SCOPE, SHEET_AUTH_FILE, True
+)
 commands.add_sheet("cmd", 0)
 
 # Ele Spreadsheet

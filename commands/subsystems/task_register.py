@@ -122,7 +122,8 @@ def project(update: Update, ctx: CallbackContext) -> int:
         new_task["task"]["new_project"] = True
 
     update.message.reply_text(
-        f"Projeto {new_task['task']['project']} selecionado\n" "Insira o nome da tarefa\n",
+        f"Projeto {new_task['task']['project']} selecionado\n",
+        "Insira o nome da tarefa\n",
         "Capitalização e acentuação são importantes",
     )
     return TASK
