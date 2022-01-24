@@ -6,4 +6,3 @@ if __name__ == "__main__":
     # Starts bot
     bot.start_polling()
     bot.idle()
-    
