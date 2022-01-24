@@ -12,13 +12,13 @@ from telegram.ext import (
     CallbackContext,
     ConversationHandler,
 )
-from utils import ele_subsystems, mec_subsystems
-from spreadsheet import ele_ss, mec_ss
-from unidecode import unidecode
 from gspread import Worksheet
+from unidecode import unidecode
+from spreadsheet import ele_ss, mec_ss
+from utils import ele_subsystems, mec_subsystems
 from commands.subsystems.generic import get_default_system_message, timeout, cancel
 
-
+# States of conversation
 [
     SYSTEM,
     SUBSYSTEM,
@@ -31,6 +31,7 @@ from commands.subsystems.generic import get_default_system_message, timeout, can
     CONFIRMATION,
 ] = range(9)
 
+# New task info
 task_info = {
     "system": "",
     "subsystem": "",
@@ -42,6 +43,7 @@ task_info = {
     "docs": "",
 }
 
+# New task env info
 new_task = {"ss": None, "dict": None, "task": task_info, "proj": ""}
 
 
@@ -171,7 +173,7 @@ def documents_question(update: Update, ctx: CallbackContext) -> int:
     answer = unidecode(update.message.text.lower())
     if answer == "sim":
         update.message.reply_text("Forneça o link para o(s) documento(s)", reply_markup=ReplyKeyboardRemove())
-    return DOCUMENTS
+        return DOCUMENTS
 
 
 def documents(update: Update, ctx: CallbackContext) -> int:

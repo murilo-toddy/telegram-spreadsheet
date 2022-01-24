@@ -6,6 +6,7 @@ import commands.subsystems.task_list as task_list
 import commands.subsystems.query_handler as query_handler
 import commands.general as general
 from spreadsheet import commands
+import commands.help as help
 
 
 def log_command(cmd: str):
@@ -13,6 +14,8 @@ def log_command(cmd: str):
 
 
 def register_commands(dsp):
+    dsp.add_handler(CommandHandler("help", help.help_command))
+
     dsp.add_handler(CommandHandler("list", task_list.subsystem_task_lister))
 
     dsp.add_handler(CommandHandler("planilha", general.send_sheet))
