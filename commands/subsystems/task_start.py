@@ -7,11 +7,11 @@ from telegram.ext import (
     CallbackContext,
     ConversationHandler,
 )
-from commands.subsystems.generic import get_default_system_message
+from commands.subsystems.generic import get_default_system_message, timeout, cancel
 from spreadsheet import ele_ss, mec_ss
 from utils import ele_subsystems, mec_subsystems
 from gspread import Worksheet
-from commands.subsystems.task_list import get_task_lister_text, timeout, cancel
+from commands.subsystems.task_list import get_task_lister_text
 
 
 SYSTEM, SUBSYSTEM, TASK = range(3)
@@ -84,9 +84,7 @@ def task(update: Update, ctx: CallbackContext):
         if row[1] == task_name:
             break
 
-    print(data[index])
     ss.update_acell(f"C{index+1}", "Fazendo")
-
     update.message.reply_text(f"Tarefa {task_name} iniciada com sucesso!")
     return ConversationHandler.END
 
@@ -100,5 +98,5 @@ start_handler = ConversationHandler(
         ConversationHandler.TIMEOUT: [MessageHandler(Filters.text | Filters.command, timeout)],
     },
     fallbacks=[CommandHandler("cancel", cancel)],
-    conversation_timeout=20,
+    conversation_timeout=30,
 )
