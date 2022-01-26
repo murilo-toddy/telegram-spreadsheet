@@ -6,7 +6,7 @@ import bot
 
 # Registers execution of certain command
 def log_command(cmd: str):
-    print(f"[!!] Command {cmd} called")
+    print(f"\n  [!!] Command {cmd} called")
 
 
 # Default message senting method, using HTML format

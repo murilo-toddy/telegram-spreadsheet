@@ -10,7 +10,8 @@ from telegram.ext import (
 from commands.subsystems.generic import get_default_system_message, timeout, cancel
 from commands.subsystems.task_list import get_task_lister_text
 from utils import ele_subsystems, mec_subsystems
-from spreadsheet import ele_ss, mec_ss
+from spreadsheet import electric_ss, mechanics_ss
+from commands.general import log_command
 
 # States of conversation
 SYSTEM, SUBSYSTEM, TASK = range(3)
@@ -22,6 +23,7 @@ task_start = {"ss": None, "dict": None, "system": "", "subsystem": "", "tasks": 
 # Home function
 # TODO Enable subsystem arguments for faster starting
 def start_task(update: Update, ctx: CallbackContext) -> int:
+    log_command("start")
     if not ctx.args:
         system = [["ele", "mec"]]
         update.message.reply_text(
@@ -48,7 +50,7 @@ def system(update: Update, ctx: CallbackContext) -> int:
     global task_start
     task_start["system"] = system
     task_start["dict"] = ele_subsystems if system == "ele" else mec_subsystems
-    task_start["ss"] = ele_ss if system == "ele" else mec_ss
+    task_start["ss"] = electric_ss if system == "ele" else mechanics_ss
 
     update.message.reply_text(
         "Informe o subsistema",

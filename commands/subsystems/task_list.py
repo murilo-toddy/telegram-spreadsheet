@@ -2,7 +2,8 @@ from telegram import Update, ParseMode, InlineKeyboardButton, InlineKeyboardMark
 from telegram.ext import CallbackContext
 import commands.general as general
 from utils import ele_subsystems, mec_subsystems
-from spreadsheet import ele_ss, mec_ss
+from spreadsheet import electric_ss, mechanics_ss
+from commands.general import log_command
 
 
 def get_subtasks(data: list, pos: int, counter: int) -> bool:
@@ -19,10 +20,10 @@ def get_subtasks(data: list, pos: int, counter: int) -> bool:
 def get_task_lister_text(system: str, subsystem: str) -> str:
     if system == "ele":
         name = ele_subsystems[subsystem]["name"]
-        ss = ele_ss.sheet(subsystem)
+        ss = electric_ss.sheet(subsystem)
     else:
         name = mec_subsystems[subsystem]["name"]
-        ss = mec_ss.sheet(subsystem)
+        ss = mechanics_ss.sheet(subsystem)
 
     data = ss.get_all_values()
     string = f"<b>Subsistema: {name}</b>\n\n<u>Tarefas</u>\n"
@@ -39,6 +40,7 @@ def get_task_lister_text(system: str, subsystem: str) -> str:
 
 
 def task_lister(update: Update, ctx: CallbackContext, args: str) -> None:
+    log_command("list")
     sub = args[0].strip().lower()
 
     if sub == "ele":

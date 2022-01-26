@@ -9,10 +9,7 @@ from spreadsheet import commands
 import commands.help as help
 
 
-def log_command(cmd: str):
-    print(f"[!!] Command {cmd} called")
-
-
+# Registers command and callback handlers into bot
 def register_commands(dsp):
     dsp.add_handler(CommandHandler("help", help.help_command))
 
@@ -30,4 +27,4 @@ def register_commands(dsp):
     for cmd in commands.sheet("cmd").get_all_values()[1:]:
         dsp.add_handler(CommandHandler(command=cmd[0], callback=general.spreadsheet_return_text))
 
-    print("[!] Commands loaded")
+    print("\n  [!] Commands loaded")
