@@ -12,12 +12,28 @@ SHEET_SCOPE = [
 
 
 class Spreadsheet:
+    """
+    Class used to comunicate with google spreadsheets
+
+    Parameters
+    ----------
+    sheet_id - str: Identifier of google spreadsheet
+    scope - list: Google drive authorization scope
+    auth_file - str: Name of authentication file
+    debug - bool: Enables debug mode
+
+    Attributes
+    ----------
+    ss - gspread.Spreadsheet: Google spreadsheet
+    sheets - {str: gspread.Worksheet}: Dictionary containing
+    """
+
     def __init__(self, sheet_id: str, scope: list, auth_file: str, debug: bool):
         self.__debug = debug
 
         # Authenticates in GoogleAPI
-        self.creds = ServiceAccountCredentials.from_json_keyfile_name(auth_file, scope)
-        self.client = gspread.authorize(self.creds)
+        creds = ServiceAccountCredentials.from_json_keyfile_name(auth_file, scope)
+        self.client = gspread.authorize(creds)
 
         # Opens spreadsheet
         self.ss = self.client.open_by_key(sheet_id)
@@ -38,9 +54,7 @@ class Spreadsheet:
 
 
 # Commands spreadsheet
-commands: Spreadsheet = Spreadsheet(
-    COMMANDS_SHEET_ID, SHEET_SCOPE, SHEET_AUTH_FILE, True
-)
+commands: Spreadsheet = Spreadsheet(COMMANDS_SHEET_ID, SHEET_SCOPE, SHEET_AUTH_FILE, True)
 commands.add_sheet("cmd", 0)
 
 # Ele Spreadsheet

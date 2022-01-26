@@ -26,6 +26,7 @@ end_task = {
     "difficulty": "",
     "comments": "",
 }
+conversation_task_info = {}
 
 
 def conclude_task(update: Update, ctx: CallbackContext) -> int:
@@ -131,6 +132,8 @@ conclude_handler = ConversationHandler(
         TASK: [MessageHandler(Filters.text & ~(Filters.command), task)],
         DIFFICULTY: [MessageHandler(Filters.text & ~(Filters.command), difficulty)],
         COMMENTS: [MessageHandler(Filters.text & ~(Filters.command), comments)],
+        ConversationHandler.TIMEOUT: [MessageHandler(Filters.text | Filters.command, timeout)],
     },
     fallbacks=[CommandHandler("cancel", cancel)],
+    conversation_timeout=30,
 )
