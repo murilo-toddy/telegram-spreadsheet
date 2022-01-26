@@ -1,22 +1,22 @@
-from spreadsheet import ele_ss, mec_ss
+from spreadsheet import electric_ss, mechanics_ss
 
 # All subsystems separated by respective systems
 electric_subsystems = {
-    "bat": {"name": "Baterias",   "sheet_id": 447316715},
-    "pt":  {"name": "Powertrain", "sheet_id": 1129194817},
-    "hw":  {"name": "Hardware",   "sheet_id": 1556464449},
-    "sw":  {"name": "Software",   "sheet_id": 367184788},
+    "bat": {"name": "Baterias", "worksheet_id": 447316715},
+    "pt": {"name": "Powertrain", "worksheet_id": 1129194817},
+    "hw": {"name": "Hardware", "worksheet_id": 1556464449},
+    "sw": {"name": "Software", "worksheet_id": 367184788},
 }
 mechanics_subsystem = {
-    "ch":    {"name": "Chassi",       "sheet_id": 447316715},
-    "tr":    {"name": "Transmissão",  "sheet_id": 447316715},
-    "aero":  {"name": "Aerodinâmica", "sheet_id": 447316715},
-    "susp":  {"name": "Suspensão",    "sheet_id": 447316715},
-    "freio": {"name": "Freio",        "sheet_id": 447316715},
+    "ch": {"name": "Chassi", "worksheet_id": 447316715},
+    "tr": {"name": "Transmissão", "worksheet_id": 447316715},
+    "aero": {"name": "Aerodinâmica", "worksheet_id": 447316715},
+    "susp": {"name": "Suspensão", "worksheet_id": 447316715},
+    "freio": {"name": "Freio", "worksheet_id": 447316715},
 }
 
 # All systems and their relevant information
 systems = {
-    "ele": {"ss": ele_ss, "sub": electric_subsystems}, 
-    "mec": {"ss": mec_ss, "sub": mechanics_subsystem},
+    "ele": {"ss": electric_ss, "sub": electric_subsystems},
+    "mec": {"ss": mechanics_ss, "sub": mechanics_subsystem},
 }

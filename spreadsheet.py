@@ -42,13 +42,28 @@ class Spreadsheet:
         if self.__debug:
             print("[!] Connected to spreadsheet")
 
-    # Registers new sheet based on its ID
-    def add_sheet(self, sheet_name: str, sheet_id: str) -> None:
-        self.sheets[sheet_name] = self.ss.get_worksheet_by_id(sheet_id)
+    """
+    Registers new sheet based on its ID
+
+    Parameters
+    ----------
+    sheet_name - str: Identifier that will be used to access worksheet
+    worksheet_id - str: Identifier of worksheet
+    """
+
+    def add_sheet(self, sheet_name: str, worksheet_id: str) -> None:
+        self.sheets[sheet_name] = self.ss.get_worksheet_by_id(worksheet_id)
         if self.__debug:
             print(f"[!!] Added sheet {sheet_name}")
 
-    # Collects info from specified sheet
+    """
+    Returns a specific worksheet
+    
+    Parameters
+    ----------
+    sheet_name - str: Identifier of registered sheet
+    """
+
     def sheet(self, sheet_name: str) -> gspread.worksheet.Worksheet:
         return self.sheets[sheet_name]
 
