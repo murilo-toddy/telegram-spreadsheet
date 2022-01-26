@@ -29,6 +29,7 @@ available_commands = {
 }
 
 
+# Returns description with all available commands
 def get_default_description() -> str:
     return (
         "<b>Comandos disponíveis</b>\n"
@@ -37,6 +38,7 @@ def get_default_description() -> str:
     )
 
 
+# Returns help for specified command as stated in dictionary
 def get_personalized_description(command: str) -> str:
     return f"<b>Comando {command}</b>\n\n<u>Descrição</u>\n{available_commands[command]}"
 

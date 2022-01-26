@@ -1,7 +1,9 @@
 import os
 from dotenv import load_dotenv
 
-# Loads environment variables
+"""
+File responsible for loading sensitive variables
+"""
 if os.path.isfile("./.env"):
     load_dotenv()
     TELEGRAM_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
