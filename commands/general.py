@@ -4,6 +4,10 @@ from spreadsheet import commands
 from config import COMMANDS_SHEET_ID
 import bot
 
+# Registers execution of certain command
+def log_command(cmd: str):
+    print(f"[!!] Command {cmd} called")
+
 
 # Default message senting method, using HTML format
 def send_message(update: Update, ctx: CallbackContext, text: str) -> None:
