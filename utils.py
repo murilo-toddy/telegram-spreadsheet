@@ -1,5 +1,3 @@
-from spreadsheet import electric_ss, mechanics_ss
-
 # All subsystems separated by respective systems
 electric_subsystems = {
     "bat": {"name": "Baterias", "worksheet_id": 447316715},
@@ -13,10 +11,4 @@ mechanics_subsystem = {
     "aero": {"name": "Aerodinâmica", "worksheet_id": 447316715},
     "susp": {"name": "Suspensão", "worksheet_id": 447316715},
     "freio": {"name": "Freio", "worksheet_id": 447316715},
-}
-
-# All systems and their relevant information
-systems = {
-    "ele": {"ss": electric_ss, "sub": electric_subsystems},
-    "mec": {"ss": mechanics_ss, "sub": mechanics_subsystem},
 }

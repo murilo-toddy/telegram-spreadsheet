@@ -1,7 +1,7 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-from utils import ele_subsystems, mec_subsystems
 from config import COMMANDS_SHEET_ID, ELE_SHEET_ID, MEC_SHEET_ID
+from utils import electric_subsystems, mechanics_subsystem
 
 SHEET_AUTH_FILE = "client_secret.json"
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1kHx2-Q3H_m3pqm7YHDmMD8SzOJMxPIIw5cwB7vVlMi0/edit#gid=1546038790"
@@ -72,12 +72,19 @@ class Spreadsheet:
 commands: Spreadsheet = Spreadsheet(COMMANDS_SHEET_ID, SHEET_SCOPE, SHEET_AUTH_FILE, True)
 commands.add_sheet("cmd", 0)
 
-# Ele Spreadsheet
-ele_ss: Spreadsheet = Spreadsheet(ELE_SHEET_ID, SHEET_SCOPE, SHEET_AUTH_FILE, True)
-for subsystem, info in ele_subsystems.items():
-    ele_ss.add_sheet(subsystem, info["sheet_id"])
+# Electric Spreadsheet
+electric_ss: Spreadsheet = Spreadsheet(ELE_SHEET_ID, SHEET_SCOPE, SHEET_AUTH_FILE, True)
+for subsystem, info in electric_subsystems.items():
+    electric_ss.add_sheet(subsystem, info["worksheet_id"])
 
 # Mec Spreadsheet
-mec_ss: Spreadsheet = Spreadsheet(MEC_SHEET_ID, SHEET_SCOPE, SHEET_AUTH_FILE, True)
-for subsystem, info in mec_subsystems.items():
-    mec_ss.add_sheet(subsystem, info["sheet_id"])
+mechanics_ss: Spreadsheet = Spreadsheet(MEC_SHEET_ID, SHEET_SCOPE, SHEET_AUTH_FILE, True)
+for subsystem, info in mechanics_subsystem.items():
+    mechanics_ss.add_sheet(subsystem, info["worksheet_id"])
+
+
+# All systems and their relevant information
+systems = {
+    "ele": {"ss": electric_ss, "sub": electric_subsystems},
+    "mec": {"ss": mechanics_ss, "sub": mechanics_subsystem},
+}
