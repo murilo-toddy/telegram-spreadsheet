@@ -8,7 +8,7 @@ def get_subtasks(data: list, pos: int, counter: int) -> bool:
     tasks = ""
     i = pos
     while i < len(data) and (not data[i][0] or i == pos):
-        if data[i][1] and data[i][2] != "Concluido":
+        if data[i][1] and data[i][2] != "Concluído":
             tasks += f"{counter} - {data[i][1]}\n"
             counter += 1
         i += 1
