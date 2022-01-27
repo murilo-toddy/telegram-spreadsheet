@@ -9,8 +9,7 @@ from telegram.ext import (
 )
 from commands.subsystems.generic import get_default_system_message, timeout, cancel
 from commands.subsystems.task_list import get_task_lister_text
-from utils import ele_subsystems, mec_subsystems
-from spreadsheet import electric_ss, mechanics_ss
+from spreadsheet import systems
 from commands.general import log_command
 
 # States of conversation
@@ -27,7 +26,7 @@ def start_task(update: Update, ctx: CallbackContext) -> int:
     if not ctx.args:
         system = [["ele", "mec"]]
         update.message.reply_text(
-            get_default_system_message("Iniciar tarefa"),
+            get_default_system_message("Iniciar tarefa", ""),
             parse_mode=ParseMode.HTML,
             reply_markup=ReplyKeyboardMarkup(system),
         )
@@ -49,8 +48,8 @@ def system(update: Update, ctx: CallbackContext) -> int:
     # Saves pertinent information in global variable
     global task_start
     task_start["system"] = system
-    task_start["dict"] = ele_subsystems if system == "ele" else mec_subsystems
-    task_start["ss"] = electric_ss if system == "ele" else mechanics_ss
+    task_start["dict"] = systems["ele"]["sub"] if system == "ele" else systems["mec"]["sub"]
+    task_start["ss"] = systems["ele"]["ss"] if system == "ele" else systems["mec"]["ss"]
 
     update.message.reply_text(
         "Informe o subsistema",

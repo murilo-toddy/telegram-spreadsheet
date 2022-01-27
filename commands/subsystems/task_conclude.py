@@ -7,12 +7,10 @@ from telegram.ext import (
     CallbackContext,
     ConversationHandler,
 )
-from spreadsheet import electric_ss, mechanics_ss
-from utils import ele_subsystems, mec_subsystems
+from spreadsheet import systems
 from commands.subsystems.generic import timeout, cancel
 from commands.subsystems.task_list import get_task_lister_text
 from gspread import Worksheet
-from commands.general import log_command
 
 # States of conversation
 SYSTEM, SUBSYSTEM, TASK, DIFFICULTY, DURATION, COMMENTS = range(6)
@@ -30,16 +28,12 @@ end_task = {
     "comments": "",
 }
 
-# Dictionary of tasks in progress
-conversation_task_info = {}
-
 
 def conclude_task(update: Update, ctx: CallbackContext) -> int:
-    log_command("conclude")
     if not ctx.args:
         system = [["ele", "mec"]]
         update.message.reply_text(
-            get_default_system_message("Concluir tarefa"),
+            get_default_system_message("Concluir tarefa", ""),
             parse_mode=ParseMode.HTML,
             reply_markup=ReplyKeyboardMarkup(system),
         )
@@ -58,8 +52,8 @@ def system(update: Update, ctx: CallbackContext) -> int:
 
     global end_task
     end_task["system"] = system
-    end_task["dict"] = ele_subsystems if system == "ele" else mec_subsystems
-    end_task["ss"] = electric_ss if system == "ele" else mechanics_ss
+    end_task["dict"] = systems["ele"]["sub"] if system == "ele" else systems["mec"]["sub"]
+    end_task["ss"] = systems["ele"]["ss"] if system == "ele" else systems["ele"]["ss"]
 
     update.message.reply_text(
         "Informe o subsistema",

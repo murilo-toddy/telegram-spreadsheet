@@ -1,9 +1,7 @@
 from telegram import Update, ParseMode, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext
 import commands.general as general
-from utils import ele_subsystems, mec_subsystems
-from spreadsheet import electric_ss, mechanics_ss
-from commands.general import log_command
+from spreadsheet import systems
 
 
 def get_subtasks(data: list, pos: int, counter: int) -> bool:
@@ -19,11 +17,11 @@ def get_subtasks(data: list, pos: int, counter: int) -> bool:
 
 def get_task_lister_text(system: str, subsystem: str) -> str:
     if system == "ele":
-        name = ele_subsystems[subsystem]["name"]
-        ss = electric_ss.sheet(subsystem)
+        name = systems["ele"]["sub"][subsystem]["name"]
+        ss = systems["ele"]["ss"].sheet(subsystem)
     else:
-        name = mec_subsystems[subsystem]["name"]
-        ss = mechanics_ss.sheet(subsystem)
+        name = systems["mec"]["sub"][subsystem]["name"]
+        ss = systems["mec"]["ss"].sheet(subsystem)
 
     data = ss.get_all_values()
     string = f"<b>Subsistema: {name}</b>\n\n<u>Tarefas</u>\n"
@@ -40,7 +38,6 @@ def get_task_lister_text(system: str, subsystem: str) -> str:
 
 
 def task_lister(update: Update, ctx: CallbackContext, args: str) -> None:
-    log_command("list")
     sub = args[0].strip().lower()
 
     if sub == "ele":
@@ -76,10 +73,10 @@ def task_lister(update: Update, ctx: CallbackContext, args: str) -> None:
             parse_mode=ParseMode.HTML,
         )
 
-    elif sub in ele_subsystems.keys():
+    elif sub in systems["ele"]["sub"].keys():
         general.send_message(update, ctx, get_task_lister_text("ele", sub))
 
-    elif sub in mec_subsystems.keys():
+    elif sub in systems["mec"]["sub"].keys():
         general.send_message(update, ctx, get_task_lister_text("mec", sub))
 
     else:

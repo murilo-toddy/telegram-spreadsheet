@@ -5,9 +5,11 @@ from telegram import ReplyKeyboardRemove, Update
 conversation_task = {}
 
 
-def get_default_system_message(mode: str) -> str:
+# Returns standardized string to begin conversation stage
+def get_default_system_message(mode: str, description: str) -> str:
     return (
         f"<b>{mode}</b>\n"
+        f"{description}\n\n"
         "Utilize <code>/cancel</code> a qualquer momento para cancelar a operação\n"
         "Informe o sistema"
     )

@@ -5,7 +5,7 @@ from config import COMMANDS_SHEET_ID
 import bot
 
 # Registers execution of certain command
-def log_command(cmd: str):
+def log_command(cmd: str) -> None:
     print(f"\n  [!!] Command {cmd} called")
 
 

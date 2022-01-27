@@ -14,8 +14,7 @@ from telegram.ext import (
 )
 from gspread import Worksheet
 from unidecode import unidecode
-from spreadsheet import electric_ss, mechanics_ss
-from utils import ele_subsystems, mec_subsystems
+from spreadsheet import systems
 from commands.general import log_command
 from commands.subsystems.generic import get_default_system_message, timeout, cancel
 
@@ -52,7 +51,7 @@ def add_task(update: Update, ctx: CallbackContext) -> int:
     log_command("register")
     system_selector = [["ele", "mec"]]
     update.message.reply_text(
-        get_default_system_message("Adicionar tarefa"),
+        get_default_system_message("Adicionar tarefa", ""),
         reply_markup=ReplyKeyboardMarkup(system_selector, one_time_keyboard=True),
         parse_mode=ParseMode.HTML,
     )
@@ -71,8 +70,8 @@ def system(update: Update, ctx: CallbackContext) -> int:
 
     global new_task
     new_task["task"]["system"] = system
-    new_task["dict"] = ele_subsystems if system == "ele" else mec_subsystems
-    new_task["ss"] = electric_ss if system == "ele" else mechanics_ss
+    new_task["dict"] = systems["ele"]["sub"] if system == "ele" else systems["mec"]["sub"]
+    new_task["ss"] = systems["ele"]["ss"] if system == "ele" else systems["mec"]["ss"]
 
     update.message.reply_text(
         "Informe o subsistema",
