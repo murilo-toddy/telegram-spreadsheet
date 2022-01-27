@@ -39,7 +39,6 @@ def get_task_lister_text(system: str, subsystem: str) -> str:
 
 def task_lister(update: Update, ctx: CallbackContext, args: str) -> None:
     sub = args[0].strip().lower()
-
     if sub == "ele":
         subsystems = [
             [
@@ -100,4 +99,16 @@ def subsystem_task_lister(update: Update, ctx: CallbackContext) -> None:
         )
 
     else:
+        task_lister(update, ctx, args)
+
+
+def query_handler(update: Update, ctx: CallbackContext) -> None:
+    """
+    Handler responsible to call list function when buttons
+    are pressed
+    """
+    query = update.callback_query.data
+    [cmd, *args] = query.split(" ")
+
+    if cmd == "list":
         task_lister(update, ctx, args)
