@@ -43,7 +43,12 @@ def get_personalized_description(command: str) -> str:
     return f"<b>Comando {command}</b>\n\n<u>Descrição</u>\n{available_commands[command]}"
 
 
-def help_command(update: Update, ctx: CallbackContext):
+def help_command(update: Update, ctx: CallbackContext) -> None:
+    """
+    Help command method
+    Returns a list of available commands if no argument is specified
+    Returns help for specific command otherwise
+    """
     if ctx.args and ctx.args[0] in available_commands.keys():
         send_message(update, ctx, get_personalized_description(ctx.args[0]))
 

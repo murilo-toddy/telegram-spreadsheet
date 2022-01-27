@@ -42,29 +42,27 @@ class Spreadsheet:
         if self.__debug:
             print("[!] Connected to spreadsheet")
 
-    """
-    Registers new sheet based on its ID
-
-    Parameters
-    ----------
-    sheet_name - str: Identifier that will be used to access worksheet
-    worksheet_id - str: Identifier of worksheet
-    """
-
     def add_sheet(self, sheet_name: str, worksheet_id: str) -> None:
+        """
+        Registers new sheet based on its ID
+
+        Parameters
+        ----------
+        sheet_name - str: Identifier that will be used to access worksheet
+        worksheet_id - str: Identifier of worksheet
+        """
         self.sheets[sheet_name] = self.ss.get_worksheet_by_id(worksheet_id)
         if self.__debug:
             print(f"[!!] Added sheet {sheet_name}")
 
-    """
-    Returns a specific worksheet
-    
-    Parameters
-    ----------
-    sheet_name - str: Identifier of registered sheet
-    """
-
     def sheet(self, sheet_name: str) -> gspread.worksheet.Worksheet:
+        """
+        Returns a specific worksheet
+
+        Parameters
+        ----------
+        sheet_name - str: Identifier of registered sheet
+        """
         return self.sheets[sheet_name]
 
 
@@ -81,7 +79,6 @@ for subsystem, info in electric_subsystems.items():
 mechanics_ss: Spreadsheet = Spreadsheet(MEC_SHEET_ID, SHEET_SCOPE, SHEET_AUTH_FILE, True)
 for subsystem, info in mechanics_subsystem.items():
     mechanics_ss.add_sheet(subsystem, info["worksheet_id"])
-
 
 # All systems and their relevant information
 systems = {
