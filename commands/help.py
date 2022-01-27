@@ -2,6 +2,7 @@ from telegram import Update
 from telegram.ext import CallbackContext
 from commands.general import send_message
 
+# TODO Write better text responses for commands
 # Dictionary containing available commands
 available_commands = {
     "help": ("Lista informações a respeito dos comandos disponíveis"),
