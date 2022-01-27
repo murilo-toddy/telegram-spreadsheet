@@ -40,7 +40,7 @@ class Spreadsheet:
         self.sheets = {}
 
         if self.__debug:
-            print("[!] Connected to spreadsheet")
+            print("\n  [!] Connected to spreadsheet")
 
     def add_sheet(self, sheet_name: str, worksheet_id: str) -> None:
         """
@@ -53,7 +53,7 @@ class Spreadsheet:
         """
         self.sheets[sheet_name] = self.ss.get_worksheet_by_id(worksheet_id)
         if self.__debug:
-            print(f"[!!] Added sheet {sheet_name}")
+            print(f"  [!!] Added sheet {sheet_name}")
 
     def sheet(self, sheet_name: str) -> gspread.worksheet.Worksheet:
         """
