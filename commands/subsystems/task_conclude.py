@@ -96,7 +96,7 @@ def task(update: Update, ctx: CallbackContext) -> int:
     end_task["row"] = row
     end_task["index"] = index
     update.message.reply_text(
-        f"A dificuldade esperada para esta tarefa era de {row[5]}\nForneça a dificuldade real encontrada (0-10)"
+        f"A dificuldade esperada para {row[1]} era de {row[5]}\nForneça a dificuldade real encontrada (0-10)"
     )
 
     return DIFFICULTY
