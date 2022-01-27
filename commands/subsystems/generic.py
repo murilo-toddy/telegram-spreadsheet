@@ -16,7 +16,7 @@ def get_default_system_message(mode: str, description: str) -> str:
 
 
 # Function executed whenever a timeout occours
-def timeout(update: Update, ctx: CallbackContext):
+def timeout(update: Update, ctx: CallbackContext) -> int:
     update.message.reply_text(
         "Limite de tempo excedido\nInicie o processo novamente", reply_markup=ReplyKeyboardRemove()
     )
