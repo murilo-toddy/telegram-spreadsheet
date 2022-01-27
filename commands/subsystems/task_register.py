@@ -196,14 +196,14 @@ def documents(update: Update, ctx: CallbackContext) -> int:
     return CONFIRMATION
 
 
-def find_project_index(proj, data):
+def find_project_index(proj, data) -> int:
     for index, p in enumerate(data):
         if p[0] == proj:
             return index + 1
     return -1
 
 
-def add_task_to_sheet():
+def add_task_to_sheet() -> None:
     global new_task
     ss: Worksheet = new_task["ss"].sheet(new_task["task"]["subsystem"])
     data = ss.get_all_values()

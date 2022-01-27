@@ -9,7 +9,7 @@ import commands.help as help
 
 
 # Registers command and callback handlers into bot
-def register_commands(dsp):
+def register_commands(dsp) -> None:
     dsp.add_handler(CommandHandler("help", help.help_command))
 
     dsp.add_handler(CommandHandler("list", task_list.subsystem_task_lister))

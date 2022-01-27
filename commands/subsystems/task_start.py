@@ -74,7 +74,7 @@ def subsystem(update: Update, ctx: CallbackContext) -> int:
     return TASK
 
 
-def task(update: Update, ctx: CallbackContext):
+def task(update: Update, ctx: CallbackContext) -> int:
     try:
         # Verifies task is valid
         global task_start

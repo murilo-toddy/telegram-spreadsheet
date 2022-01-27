@@ -77,7 +77,7 @@ def subsystem(update: Update, ctx: CallbackContext) -> int:
     return TASK
 
 
-def task(update: Update, ctx: CallbackContext):
+def task(update: Update, ctx: CallbackContext) -> int:
     try:
         global end_task
         task = int(update.message.text)
@@ -102,14 +102,14 @@ def task(update: Update, ctx: CallbackContext):
     return DIFFICULTY
 
 
-def difficulty(update: Update, ctx: CallbackContext):
+def difficulty(update: Update, ctx: CallbackContext) -> int:
     global end_task
     end_task["difficulty"] = update.message.text
     update.message.reply_text("Descreva brevemente o porquê desta dificuldade")
     return COMMENTS
 
 
-def comments(update: Update, ctx: CallbackContext):
+def comments(update: Update, ctx: CallbackContext) -> int:
     global end_task
     end_task["comments"] = update.message.text
 
