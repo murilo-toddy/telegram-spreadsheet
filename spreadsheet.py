@@ -13,12 +13,12 @@ SHEET_SCOPE = [
 
 class Spreadsheet:
     """
-    Class used to comunicate with google spreadsheets
+    Class used to comunicate with Google spreadsheets
 
     Parameters
     ----------
     sheet_id - str: Identifier of google spreadsheet
-    scope - list: Google drive authorization scope
+    scope - list: Google Drive authorization scope
     auth_file - str: Name of authentication file
     debug - bool: Enables debug mode
 
@@ -42,7 +42,7 @@ class Spreadsheet:
         if self.__debug:
             print("\n  [!] Connected to spreadsheet")
 
-    def add_sheet(self, sheet_name: str, worksheet_id: str) -> None:
+    def add_sheet(self, sheet_name: str, worksheet_id: int) -> None:
         """
         Registers new sheet based on its ID
 

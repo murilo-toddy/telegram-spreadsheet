@@ -83,7 +83,7 @@ def task(update: Update, ctx: CallbackContext) -> int:
         task = int(update.message.text)
         task_row = [row for row in end_task["tasks"].split("\n") if row.startswith(f"{task}")][0]
         task_name = task_row.split(" - ")[1]
-    except:
+    except Exception:
         update.message.reply_text("Forneça um número válido")
         return TASK
 
@@ -127,11 +127,11 @@ def comments(update: Update, ctx: CallbackContext) -> int:
 conclude_handler = ConversationHandler(
     entry_points=[CommandHandler("end", conclude_task)],
     states={
-        SYSTEM: [MessageHandler(Filters.text & ~(Filters.command), system)],
-        SUBSYSTEM: [MessageHandler(Filters.text & ~(Filters.command), subsystem)],
-        TASK: [MessageHandler(Filters.text & ~(Filters.command), task)],
-        DIFFICULTY: [MessageHandler(Filters.text & ~(Filters.command), difficulty)],
-        COMMENTS: [MessageHandler(Filters.text & ~(Filters.command), comments)],
+        SYSTEM: [MessageHandler(Filters.text & ~Filters.command, system)],
+        SUBSYSTEM: [MessageHandler(Filters.text & ~Filters.command, subsystem)],
+        TASK: [MessageHandler(Filters.text & ~Filters.command, task)],
+        DIFFICULTY: [MessageHandler(Filters.text & ~Filters.command, difficulty)],
+        COMMENTS: [MessageHandler(Filters.text & ~Filters.command, comments)],
         ConversationHandler.TIMEOUT: [MessageHandler(Filters.text | Filters.command, timeout)],
     },
     fallbacks=[CommandHandler("cancel", cancel)],

@@ -4,6 +4,7 @@ from spreadsheet import commands
 from config import COMMANDS_SHEET_ID
 import bot
 
+
 # Registers execution of certain command
 def log_command(cmd: str) -> None:
     print(f"\n  [!!] Command {cmd} called")
@@ -17,13 +18,13 @@ def send_message(update: Update, ctx: CallbackContext, text: str) -> None:
 # Gets text from commands listed in Bot Commands spreadsheet
 def spreadsheet_return_text(update: Update, ctx: CallbackContext) -> None:
     cmd = update.message.text[1:]
-    l = [cmds[0] for cmds in commands.sheet("cmd").get_all_values()[1:]]
+    cmds = [cmds[0] for cmds in commands.sheet("cmd").get_all_values()[1:]]
     print(f"[!!] Command {cmd} called")
-    index = l.index(cmd) + 1
+    index = cmds.index(cmd) + 1
     send_message(update, ctx, commands.sheet("cmd").get_all_values()[index][1])
 
 
-# Reloads commands listed in Bot Commands spreadsheet
+# Reload commands listed in Bot Commands spreadsheet
 def update_sheet_commands(update: Update, ctx: CallbackContext) -> None:
     bot.handler.register_commands(bot.dsp)
     send_message(update, ctx, "Comandos atualizados com sucesso!")

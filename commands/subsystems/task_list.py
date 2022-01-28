@@ -4,7 +4,7 @@ import commands.general as general
 from spreadsheet import systems
 
 
-def get_subtasks(data: list, pos: int, counter: int) -> bool:
+def get_subtasks(data: list, pos: int, counter: int) -> tuple[str, int, int]:
     tasks = ""
     i = pos
     while i < len(data) and (not data[i][0] or i == pos):
@@ -37,7 +37,7 @@ def get_task_lister_text(system: str, subsystem: str) -> str:
     return string
 
 
-def task_lister(update: Update, ctx: CallbackContext, args: str) -> None:
+def task_lister(update: Update, ctx: CallbackContext, args: list[str]) -> None:
     sub = args[0].strip().lower()
     if sub == "ele":
         subsystems = [

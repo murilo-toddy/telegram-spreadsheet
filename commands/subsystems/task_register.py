@@ -70,8 +70,12 @@ def system(update: Update, ctx: CallbackContext) -> int:
 
     global new_task
     new_task["task"]["system"] = system
-    new_task["dict"] = systems["ele"]["sub"] if system == "ele" else systems["mec"]["sub"]
-    new_task["ss"] = systems["ele"]["ss"] if system == "ele" else systems["mec"]["ss"]
+    if system == "ele":
+        new_task["dict"] = systems["ele"]["sub"]
+        new_task["ss"] = systems["ele"]["ss"]
+    else:
+        new_task["dict"] = systems["mec"]["sub"]
+        new_task["ss"] = systems["mec"]["ss"]
 
     update.message.reply_text(
         "Informe o subsistema",
@@ -252,15 +256,15 @@ def confirmation(update: Update, ctx: CallbackContext) -> int:
 register_handler = ConversationHandler(
     entry_points=[CommandHandler("add", add_task)],
     states={
-        SYSTEM: [MessageHandler(Filters.text & ~(Filters.command), system)],
-        SUBSYSTEM: [MessageHandler(Filters.text & ~(Filters.command), subsystem)],
-        PROJECT: [MessageHandler(Filters.text & ~(Filters.command), project)],
-        TASK: [MessageHandler(Filters.text & ~(Filters.command), task)],
-        DIFFICULTY: [MessageHandler(Filters.text & ~(Filters.command), difficulty)],
-        DURATION: [MessageHandler(Filters.text & ~(Filters.command), duration)],
-        DOC_QUESTION: [MessageHandler(Filters.text & ~(Filters.command), documents_question)],
-        DOCUMENTS: [MessageHandler(Filters.text & ~(Filters.command), documents)],
-        CONFIRMATION: [MessageHandler(Filters.text & ~(Filters.command), confirmation)],
+        SYSTEM: [MessageHandler(Filters.text & ~Filters.command, system)],
+        SUBSYSTEM: [MessageHandler(Filters.text & ~Filters.command, subsystem)],
+        PROJECT: [MessageHandler(Filters.text & ~Filters.command, project)],
+        TASK: [MessageHandler(Filters.text & ~Filters.command, task)],
+        DIFFICULTY: [MessageHandler(Filters.text & ~Filters.command, difficulty)],
+        DURATION: [MessageHandler(Filters.text & ~Filters.command, duration)],
+        DOC_QUESTION: [MessageHandler(Filters.text & ~Filters.command, documents_question)],
+        DOCUMENTS: [MessageHandler(Filters.text & ~Filters.command, documents)],
+        CONFIRMATION: [MessageHandler(Filters.text & ~Filters.command, confirmation)],
         ConversationHandler.TIMEOUT: [MessageHandler(Filters.text | Filters.command, timeout)],
     },
     fallbacks=[CommandHandler("cancel", cancel)],

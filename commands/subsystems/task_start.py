@@ -1,3 +1,4 @@
+import gspread
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove, ParseMode
 from gspread import Worksheet
 from telegram.ext import (
@@ -7,16 +8,17 @@ from telegram.ext import (
     CallbackContext,
     ConversationHandler,
 )
+
 from commands.subsystems.generic import get_default_system_message, timeout, cancel
 from commands.subsystems.task_list import get_task_lister_text
-from spreadsheet import systems
+from spreadsheet import systems, Spreadsheet
 from commands.general import log_command
 
 # States of conversation
 SYSTEM, SUBSYSTEM, TASK = range(3)
 
 # Dictionary containing all needed information about the task
-task_start = {"ss": None, "dict": None, "system": "", "subsystem": "", "tasks": ""}
+task_start = {"ss": Spreadsheet, "dict": dict, "system": str, "subsystem": str, "tasks": str}
 
 
 # Home function
@@ -102,9 +104,9 @@ def task(update: Update, ctx: CallbackContext) -> int:
 start_handler = ConversationHandler(
     entry_points=[CommandHandler("start", start_task)],
     states={
-        SYSTEM: [MessageHandler(Filters.text & ~(Filters.command), system)],
-        SUBSYSTEM: [MessageHandler(Filters.text & ~(Filters.command), subsystem)],
-        TASK: [MessageHandler(Filters.text & ~(Filters.command), task)],
+        SYSTEM: [MessageHandler(Filters.text & ~Filters.command, system)],
+        SUBSYSTEM: [MessageHandler(Filters.text & ~Filters.command, subsystem)],
+        TASK: [MessageHandler(Filters.text & ~Filters.command, task)],
         ConversationHandler.TIMEOUT: [MessageHandler(Filters.text | Filters.command, timeout)],
     },
     fallbacks=[CommandHandler("cancel", cancel)],

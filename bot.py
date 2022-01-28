@@ -6,5 +6,5 @@ import commands.handler as handler
 bot = Updater(TELEGRAM_TOKEN)
 dsp = bot.dispatcher
 
-# Loads commands and handlers
+# Load commands and handlers
 handler.register_commands(dsp)
