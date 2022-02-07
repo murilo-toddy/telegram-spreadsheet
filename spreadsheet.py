@@ -77,8 +77,8 @@ for subsystem, info in electric_subsystems.items():
 
 # Mec Spreadsheet
 mechanics_ss: Spreadsheet = Spreadsheet(MEC_SHEET_ID, SHEET_SCOPE, SHEET_AUTH_FILE, True)
-for subsystem, info in mechanics_subsystem.items():
-    mechanics_ss.add_sheet(subsystem, info["worksheet_id"])
+# for subsystem, info in mechanics_subsystem.items():
+#     mechanics_ss.add_sheet(subsystem, info["worksheet_id"])
 
 # All systems and their relevant information
 systems = {

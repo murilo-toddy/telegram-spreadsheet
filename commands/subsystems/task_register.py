@@ -3,7 +3,6 @@
 # Add comment option
 # Add project name and merging
 # Export similar functions to other module
-
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove, ParseMode
 from telegram.ext import (
     MessageHandler,
@@ -13,9 +12,10 @@ from telegram.ext import (
     ConversationHandler,
 )
 from gspread import Worksheet
+from datetime import date
 from unidecode import unidecode
-from spreadsheet import systems
 from commands.general import log_command
+from spreadsheet import Spreadsheet, systems
 from commands.subsystems.generic import get_default_system_message, timeout, cancel
 
 # States of conversation
@@ -44,7 +44,7 @@ task_info = {
 }
 
 # New task env info
-new_task = {"ss": None, "dict": None, "task": task_info, "proj": ""}
+new_task = {"ss": Spreadsheet, "dict": None, "task": task_info, "proj": ""}
 
 
 def add_task(update: Update, ctx: CallbackContext) -> int:
@@ -212,9 +212,6 @@ def add_task_to_sheet() -> None:
     ss: Worksheet = new_task["ss"].sheet(new_task["task"]["subsystem"])
     data = ss.get_all_values()
     if new_task["task"]["new_project"]:
-        # index = 1
-        # while data[index][2]:
-        #     index += 1
         index = len(data) + 1
     else:
         index = find_project_index(new_task["task"]["project"], data)
@@ -231,7 +228,7 @@ def add_task_to_sheet() -> None:
                 task["project"],
                 task["task"],
                 "A fazer",
-                "",
+                date.today().strftime("%d/%m/%Y"),
                 task["duration"],
                 task["diff"],
                 "",
