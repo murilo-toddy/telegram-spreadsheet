@@ -14,9 +14,9 @@ from telegram.ext import (
 from gspread import Worksheet
 from datetime import date
 from unidecode import unidecode
-from commands.general import log_command
+from .generic import get_default_system_message, timeout, cancel
+from ..general import log_command
 from spreadsheet import Spreadsheet, systems
-from commands.subsystems.generic import get_default_system_message, timeout, cancel
 
 # States of conversation
 [

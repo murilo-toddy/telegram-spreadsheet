@@ -1,4 +1,3 @@
-from commands.subsystems.generic import get_default_system_message
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove, ParseMode
 from telegram.ext import (
     MessageHandler,
@@ -7,10 +6,11 @@ from telegram.ext import (
     CallbackContext,
     ConversationHandler,
 )
-from spreadsheet import systems
-from commands.subsystems.generic import timeout, cancel
-from commands.subsystems.task_list import get_task_lister_text
 from gspread import Worksheet
+from .generic import timeout, cancel, get_default_system_message, conversation_task
+from .task_list import get_task_lister_text
+from ..general import log_command
+from spreadsheet import systems
 
 # States of conversation
 SYSTEM, SUBSYSTEM, TASK, DIFFICULTY, DURATION, COMMENTS = range(6)
@@ -30,6 +30,7 @@ end_task = {
 
 
 def conclude_task(update: Update, ctx: CallbackContext) -> int:
+    log_command("conclude task")
     if not ctx.args:
         system = [["ele", "mec"]]
         update.message.reply_text(
@@ -41,6 +42,7 @@ def conclude_task(update: Update, ctx: CallbackContext) -> int:
 
 
 def system(update: Update, ctx: CallbackContext) -> int:
+    sender_id = update.effective_user.id
     system = update.message.text
     if system == "ele":
         subsystem_selector = [["bt", "pt"], ["hw", "sw"]]

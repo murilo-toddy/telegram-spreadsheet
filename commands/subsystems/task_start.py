@@ -9,10 +9,10 @@ from telegram.ext import (
     ConversationHandler,
 )
 
-from commands.subsystems.generic import get_default_system_message, timeout, cancel
-from commands.subsystems.task_list import get_task_lister_text
+from .generic import get_default_system_message, timeout, cancel
+from .task_list import get_task_lister_text
+from ..general import log_command
 from spreadsheet import systems, Spreadsheet
-from commands.general import log_command
 
 # States of conversation
 SYSTEM, SUBSYSTEM, TASK = range(3)
