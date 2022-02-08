@@ -90,6 +90,7 @@ def task(update: Update, ctx: CallbackContext) -> int:
         task = int(update.message.text)
         task_row = [row for row in conversation.tasks.split("\n") if row.startswith(f"{task}")][0]
         task_name = task_row.split(" - ")[1]
+        conversation.task = task_name
     except:
         # Task is invalid
         update.message.reply_text("Forneça um número válido")
@@ -97,14 +98,7 @@ def task(update: Update, ctx: CallbackContext) -> int:
 
     # Finds task index in spreadsheet
     # TODO create method in electric spreadsheet
-    ss: Worksheet = conversation.ss.sheet(conversation.subsystem)
-    data = ss.get_all_values()
-    for index, row in enumerate(data):
-        if row[1] == task_name:
-            break
-
-    # Updates status and returns
-    ss.update_acell(f"C{index+1}", "Fazendo")
+    conversation.ss.start_task(conversation)
     update.message.reply_text(f"Tarefa {task_name} iniciada com sucesso!")
     return ConversationHandler.END
 
