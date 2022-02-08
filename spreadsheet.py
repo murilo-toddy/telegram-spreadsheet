@@ -66,16 +66,39 @@ class Spreadsheet:
         return self.sheets[sheet_name]
 
 
+class ElectricSpreadsheet(Spreadsheet):
+    """
+    Class to handle spreadsheet manipulation related
+    to Electric System
+
+    Methods
+    -------
+    conclude_task: Updates task state to Concluído
+    """
+
+    def __init__(self, sheet_id: str, scope: list, auth_file: str, debug: bool):
+        super().__init__(sheet_id, scope, auth_file, debug)
+
+    def conclude_task(self, conversation) -> None:
+        sheet = self.sheet(conversation.subsystem)
+        index = conversation.index + 1
+
+        sheet.update_acell(f"C{index}", "Concluído")
+        sheet.update_acell(f"H{index}", conversation.difficulty)
+        sheet.update_acell(f"I{index}", f"{conversation.row[8]}\n{conversation.comments}")
+
+
 # Commands spreadsheet
 commands: Spreadsheet = Spreadsheet(COMMANDS_SHEET_ID, SHEET_SCOPE, SHEET_AUTH_FILE, True)
 commands.add_sheet("cmd", 0)
 
 # Electric Spreadsheet
-electric_ss: Spreadsheet = Spreadsheet(ELE_SHEET_ID, SHEET_SCOPE, SHEET_AUTH_FILE, True)
+electric_ss: ElectricSpreadsheet = ElectricSpreadsheet(ELE_SHEET_ID, SHEET_SCOPE, SHEET_AUTH_FILE, True)
 for subsystem, info in electric_subsystems.items():
     electric_ss.add_sheet(subsystem, info["worksheet_id"])
 
 # Mec Spreadsheet
+# TODO determine how mechanics spreadsheet is going to work
 mechanics_ss: Spreadsheet = Spreadsheet(MEC_SHEET_ID, SHEET_SCOPE, SHEET_AUTH_FILE, True)
 # for subsystem, info in mechanics_subsystem.items():
 #     mechanics_ss.add_sheet(subsystem, info["worksheet_id"])

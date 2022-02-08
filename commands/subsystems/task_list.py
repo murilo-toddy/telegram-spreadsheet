@@ -1,10 +1,11 @@
 from telegram import Update, ParseMode, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext
-import commands.general as general
+from ..general import send_message
 from spreadsheet import systems
 
-
+# TODO refactor file
 def get_subtasks(data: list, pos: int, counter: int) -> tuple[str, int, int]:
+    # sourcery skip: equality-identity, use-assigned-variable
     tasks = ""
     i = pos
     while i < len(data) and (not data[i][0] or i == pos):
@@ -15,13 +16,10 @@ def get_subtasks(data: list, pos: int, counter: int) -> tuple[str, int, int]:
     return tasks, i, counter
 
 
+# TODO export method to generic file and refactor
 def get_task_lister_text(system: str, subsystem: str) -> str:
-    if system == "ele":
-        name = systems["ele"]["sub"][subsystem]["name"]
-        ss = systems["ele"]["ss"].sheet(subsystem)
-    else:
-        name = systems["mec"]["sub"][subsystem]["name"]
-        ss = systems["mec"]["ss"].sheet(subsystem)
+    name = systems[system]["sub"][subsystem]["name"]
+    ss = systems[system]["ss"].sheet(subsystem)
 
     data = ss.get_all_values()
     string = f"<b>Subsistema: {name}</b>\n\n<u>Tarefas</u>\n"
@@ -73,18 +71,19 @@ def task_lister(update: Update, ctx: CallbackContext, args: list[str]) -> None:
         )
 
     elif sub in systems["ele"]["sub"].keys():
-        general.send_message(update, ctx, get_task_lister_text("ele", sub))
+        send_message(update, ctx, get_task_lister_text("ele", sub))
 
     elif sub in systems["mec"]["sub"].keys():
-        general.send_message(update, ctx, get_task_lister_text("mec", sub))
+        send_message(update, ctx, get_task_lister_text("mec", sub))
 
     else:
-        general.send_message(update, ctx, "Sistema ou subsistema não encontrado")
+        send_message(update, ctx, "Sistema ou subsistema não encontrado")
 
 
 def subsystem_task_lister(update: Update, ctx: CallbackContext) -> None:
-    args = ctx.args
-    if not args:
+    if args := ctx.args:
+        task_lister(update, ctx, args)
+    else:
         systems = [
             [
                 InlineKeyboardButton("Elétrica", callback_data="list ele"),
@@ -97,9 +96,6 @@ def subsystem_task_lister(update: Update, ctx: CallbackContext) -> None:
             reply_markup=InlineKeyboardMarkup(systems),
             parse_mode=ParseMode.HTML,
         )
-
-    else:
-        task_lister(update, ctx, args)
 
 
 def query_handler(update: Update, ctx: CallbackContext) -> None:
