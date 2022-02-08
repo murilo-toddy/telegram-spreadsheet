@@ -12,7 +12,6 @@ from telegram.ext import (
     ConversationHandler,
 )
 from gspread import Worksheet
-from datetime import date
 from unidecode import unidecode
 from .generic import get_default_system_message, timeout, cancel, load_conversation, get_conversation
 from ..general import log_command
@@ -203,52 +202,12 @@ def documents(update: Update, ctx: CallbackContext) -> int:
     return CONFIRMATION
 
 
-def find_project_index(proj, data) -> int:
-    for index, p in enumerate(data):
-        if p[0] == proj:
-            return index + 1
-    return -1
-
-
-def add_task_to_sheet(update: Update) -> None:
-    # TODO extract to inherited spreadsheet class
-    conversation = get_conversation(update)
-
-    global new_task
-    ss: Worksheet = conversation.ss.sheet(conversation.subsystem)
-    data = ss.get_all_values()
-    if conversation.new_project:
-        index = len(data) + 1
-    else:
-        index = find_project_index(conversation.project, data)
-        while not data[index][0]:
-            index += 1
-        index += 1
-        ss.insert_row([], index=index)
-
-    ss.update(
-        f"A{index}:J{index}",
-        [
-            [
-                conversation.project,
-                conversation.task,
-                "A fazer",
-                date.today().strftime("%d/%m/%Y"),
-                conversation.duration,
-                conversation.difficulty,
-                "",
-                "",
-                "",
-                conversation.documents,
-            ]
-        ],
-    )
-
-
 def confirmation(update: Update, ctx: CallbackContext) -> int:
     answer = unidecode(update.message.text.lower())
     if answer == "sim":
-        add_task_to_sheet(update)
+        conversation = get_conversation(update)
+        conversation.ss.register_task(conversation)
+        # add_task_to_sheet(update)
         update.message.reply_text("Tarefa adicionada com sucesso", reply_markup=ReplyKeyboardRemove())
     else:
         update.message.reply_text("Processo cancelado", reply_markup=ReplyKeyboardRemove())
