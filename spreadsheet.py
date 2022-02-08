@@ -1,4 +1,5 @@
 import gspread
+from datetime import date
 from oauth2client.service_account import ServiceAccountCredentials
 from config import COMMANDS_SHEET_ID, ELE_SHEET_ID, MEC_SHEET_ID
 from utils import electric_subsystems, mechanics_subsystem
@@ -66,7 +67,32 @@ class Spreadsheet:
         return self.sheets[sheet_name]
 
 
-class ElectricSpreadsheet(Spreadsheet):
+class SystemSpreadsheet(Spreadsheet):
+    """
+    Interface to handle spreadsheet manipulation related
+    to a generic system
+
+    Methods
+    -------
+    conclude_task: Updates task state to Concluído
+    register_task: Adds new task to spreadsheet
+    start_task: Updates task state to Fazendo
+    """
+
+    def __init__(self, sheet_id: str, scope: list, auth_file: str, debug: bool):
+        super().__init__(sheet_id, scope, auth_file, debug)
+
+    def conclude_task(self, user_data) -> None:
+        pass
+
+    def register_task(self, user_data) -> None:
+        pass
+
+    def start_task(self, user_data) -> None:
+        pass
+
+
+class ElectricSpreadsheet(SystemSpreadsheet):
     """
     Class to handle spreadsheet manipulation related
     to Electric System
@@ -79,13 +105,60 @@ class ElectricSpreadsheet(Spreadsheet):
     def __init__(self, sheet_id: str, scope: list, auth_file: str, debug: bool):
         super().__init__(sheet_id, scope, auth_file, debug)
 
-    def conclude_task(self, conversation) -> None:
-        sheet = self.sheet(conversation.subsystem)
-        index = conversation.index + 1
+    def conclude_task(self, user_data) -> None:
+        sheet = self.sheet(user_data.subsystem)
+        index = user_data.index + 1
 
         sheet.update_acell(f"C{index}", "Concluído")
-        sheet.update_acell(f"H{index}", conversation.difficulty)
-        sheet.update_acell(f"I{index}", f"{conversation.row[8]}\n{conversation.comments}")
+        sheet.update_acell(f"H{index}", user_data.difficulty)
+        sheet.update_acell(f"I{index}", f"{user_data.row[8]}\n{user_data.comments}")
+
+    # TODO refactor these functions
+    def __find_project_index(self, proj, data) -> int:
+        for index, p in enumerate(data):
+            if p[0] == proj:
+                return index + 1
+        return -1
+
+    def register_task(self, user_data) -> None:
+        ss: gspread.Worksheet = user_data.ss.sheet(user_data.subsystem)
+        data = ss.get_all_values()
+        if user_data.new_project:
+            index = len(data) + 1
+        else:
+            index = self.__find_project_index(user_data.project, data)
+            while not data[index][0]:
+                index += 1
+            index += 1
+            ss.insert_row([], index=index)
+
+        ss.update(
+            f"A{index}:J{index}",
+            [
+                [
+                    user_data.project,
+                    user_data.task,
+                    "A fazer",
+                    date.today().strftime("%d/%m/%Y"),
+                    user_data.duration,
+                    user_data.difficulty,
+                    "",
+                    "",
+                    "",
+                    user_data.documents,
+                ]
+            ],
+        )
+
+    def start_task(self, user_data) -> None:
+        ss: gspread.Worksheet = user_data.ss.sheet(user_data.subsystem)
+        data = ss.get_all_values()
+        for index, row in enumerate(data):
+            if row[1] == user_data.task:
+                break
+
+        # Updates status and returns
+        ss.update_acell(f"C{index+1}", "Fazendo")
 
 
 # Commands spreadsheet
