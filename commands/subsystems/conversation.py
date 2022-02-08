@@ -1,10 +1,10 @@
-from spreadsheet import Spreadsheet
+from spreadsheet import SystemSpreadsheet
 
 # A class containing all information that may be needed in a certain conversation
 class Conversation:
     def __init__(self):
         # Related data
-        self.ss: Spreadsheet
+        self.ss: SystemSpreadsheet
         self.dict: dict
         self.index: int
         self.row: int
