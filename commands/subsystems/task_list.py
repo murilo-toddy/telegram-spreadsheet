@@ -3,7 +3,7 @@ from telegram.ext import CallbackContext
 from ..general import send_message
 from spreadsheet import systems
 
-
+# TODO refactor file
 def get_subtasks(data: list, pos: int, counter: int) -> tuple[str, int, int]:
     # sourcery skip: equality-identity, use-assigned-variable
     tasks = ""
@@ -16,13 +16,10 @@ def get_subtasks(data: list, pos: int, counter: int) -> tuple[str, int, int]:
     return tasks, i, counter
 
 
+# TODO export method to generic file and refactor
 def get_task_lister_text(system: str, subsystem: str) -> str:
-    if system == "ele":
-        name = systems["ele"]["sub"][subsystem]["name"]
-        ss = systems["ele"]["ss"].sheet(subsystem)
-    else:
-        name = systems["mec"]["sub"][subsystem]["name"]
-        ss = systems["mec"]["ss"].sheet(subsystem)
+    name = systems[system]["sub"][subsystem]["name"]
+    ss = systems[system]["ss"].sheet(subsystem)
 
     data = ss.get_all_values()
     string = f"<b>Subsistema: {name}</b>\n\n<u>Tarefas</u>\n"
