@@ -1,8 +1,19 @@
 from telegram.ext import CallbackContext, ConversationHandler
 from telegram import ReplyKeyboardRemove, Update
+from .conversation import Conversation
+
 
 # A dictionary to store information about each conversation, identified by the sender's telegram ID
 conversation_task = {}
+
+# Instanciates a new conversation based on sender's username
+def load_conversation(update: Update) -> None:
+    conversation_task[update.effective_user.username] = Conversation()
+
+
+# Returns a dictionary containing all info of a certain conversation
+def get_conversation(update: Update) -> Conversation:
+    return conversation_task[update.effective_user.username]
 
 
 # Returns standardized string to begin conversation stage
