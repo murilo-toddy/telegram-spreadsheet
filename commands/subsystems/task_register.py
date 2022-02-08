@@ -51,7 +51,7 @@ def add_task(update: Update, ctx: CallbackContext) -> int:
     log_command("register")
     system_selector = [["ele", "mec"]]
     update.message.reply_text(
-        get_default_system_message("Adicionar tarefa", ""),
+        get_default_system_message("Adicionar tarefa", "Adiciona uma nova tarefa na planilha de mapeamento do sistema"),
         reply_markup=ReplyKeyboardMarkup(system_selector, one_time_keyboard=True),
         parse_mode=ParseMode.HTML,
     )

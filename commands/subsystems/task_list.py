@@ -5,6 +5,7 @@ from spreadsheet import systems
 
 
 def get_subtasks(data: list, pos: int, counter: int) -> tuple[str, int, int]:
+    # sourcery skip: equality-identity, use-assigned-variable
     tasks = ""
     i = pos
     while i < len(data) and (not data[i][0] or i == pos):

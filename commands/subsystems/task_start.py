@@ -28,7 +28,10 @@ def start_task(update: Update, ctx: CallbackContext) -> int:
     if not ctx.args:
         system = [["ele", "mec"]]
         update.message.reply_text(
-            get_default_system_message("Iniciar tarefa", ""),
+            get_default_system_message(
+                "Iniciar tarefa",
+                "Modifica o status de uma tarefa para Fazendo na planilha de mapeamento do sistema",
+            ),
             parse_mode=ParseMode.HTML,
             reply_markup=ReplyKeyboardMarkup(system),
         )

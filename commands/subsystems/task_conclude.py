@@ -32,11 +32,13 @@ end_task = {
 def conclude_task(update: Update, ctx: CallbackContext) -> int:
     log_command("conclude task")
     if not ctx.args:
-        system = [["ele", "mec"]]
+        systems = [["ele", "mec"]]
         update.message.reply_text(
-            get_default_system_message("Concluir tarefa", ""),
+            get_default_system_message(
+                "Concluir tarefa", "Modifica o status da tarefa para Concluído na planilha de mapeamento do sistema"
+            ),
             parse_mode=ParseMode.HTML,
-            reply_markup=ReplyKeyboardMarkup(system),
+            reply_markup=ReplyKeyboardMarkup(systems),
         )
         return SYSTEM
 
