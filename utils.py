@@ -1,5 +1,5 @@
 # All system and subsystem related data info
-systems = ["ele", "mec"]
+available_systems = ["ele", "mec"]
 
 electric_subsystems = {
     "bat": {"name": "Baterias", "worksheet_id": 447316715},
