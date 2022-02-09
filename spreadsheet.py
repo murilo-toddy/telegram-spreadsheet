@@ -1,6 +1,8 @@
-import gspread
 from datetime import date
+
+import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+
 from config import COMMANDS_SHEET_ID, ELE_SHEET_ID, MEC_SHEET_ID
 from utils import electric_subsystems, mechanics_subsystem
 
@@ -28,6 +30,7 @@ class Spreadsheet:
     ss - gspread.Spreadsheet: Google spreadsheet
     sheets - {str: gspread.Worksheet}: Dictionary containing
     """
+
     def __init__(self, sheet_id: str, scope: list, auth_file: str, debug: bool):
         self.__debug = debug
 
@@ -77,6 +80,7 @@ class SystemSpreadsheet(Spreadsheet):
     register_task: Adds new task to spreadsheet
     start_task: Updates task state to Fazendo
     """
+
     def __init__(self, sheet_id: str, scope: list, auth_file: str, debug: bool):
         super().__init__(sheet_id, scope, auth_file, debug)
 
@@ -149,7 +153,7 @@ class ElectricSpreadsheet(SystemSpreadsheet):
                 break
 
         # Updates status and returns
-        ss.update_acell(f"C{index+1}", "Fazendo")
+        ss.update_acell(f"C{index + 1}", "Fazendo")
 
 
 # Commands spreadsheet

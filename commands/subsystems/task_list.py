@@ -1,8 +1,9 @@
 from telegram import Update, ParseMode, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext
+
+from spreadsheet import systems
 from .generic import get_task_lister_text
 from ..general import send_message, log_command
-from spreadsheet import systems
 
 
 def task_lister(update: Update, ctx: CallbackContext, args: list[str]) -> None:
@@ -22,9 +23,9 @@ def task_lister(update: Update, ctx: CallbackContext, args: list[str]) -> None:
         ctx.bot.send_message(
             chat_id=update.effective_chat.id,
             text="<b>Elétrica</b>\n\n"
-            "O sistema da elétrica possui os seguintes subsistemas:\n"
-            "- Baterias\n- Powertrain\n- Hardware\n- Software\n\n"
-            "Escolha o subsistema que deseja listar as tarefas",
+                 "O sistema da elétrica possui os seguintes subsistemas:\n"
+                 "- Baterias\n- Powertrain\n- Hardware\n- Software\n\n"
+                 "Escolha o subsistema que deseja listar as tarefas",
             reply_markup=InlineKeyboardMarkup(subsystems),
             parse_mode=ParseMode.HTML,
         )
@@ -34,9 +35,9 @@ def task_lister(update: Update, ctx: CallbackContext, args: list[str]) -> None:
         ctx.bot.send_message(
             chat_id=update.effective_chat.id,
             text="<b>Mecânica</b>\n\n"
-            "O sistema da mecânica possui os seguintes subsistemas:\n"
-            "- Chassi\n\n"
-            "Escolha o subsistema que deseja listar as tarefas",
+                 "O sistema da mecânica possui os seguintes subsistemas:\n"
+                 "- Chassi\n\n"
+                 "Escolha o subsistema que deseja listar as tarefas",
             reply_markup=InlineKeyboardMarkup(subsystems),
             parse_mode=ParseMode.HTML,
         )

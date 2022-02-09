@@ -1,3 +1,4 @@
+from gspread import Worksheet
 from telegram import Update
 from telegram.ext import (
     MessageHandler,
@@ -6,7 +7,8 @@ from telegram.ext import (
     CallbackContext,
     ConversationHandler,
 )
-from gspread import Worksheet
+
+from utils import available_systems, electric_subsystems, mechanics_subsystem
 from .generic import (
     timeout,
     cancel,
@@ -18,8 +20,6 @@ from .generic import (
     load_subsystem_info
 )
 from ..general import log_command, reply_text
-from utils import available_systems, electric_subsystems, mechanics_subsystem
-
 
 # States of conversation
 SYSTEM, SUBSYSTEM, TASK, DIFFICULTY, DURATION, COMMENTS = range(6)

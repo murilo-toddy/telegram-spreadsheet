@@ -11,11 +11,11 @@ from telegram.ext import (
     CallbackContext,
     ConversationHandler,
 )
-from gspread import Worksheet
 from unidecode import unidecode
+
+from spreadsheet import systems
 from .generic import get_default_system_message, timeout, cancel, load_conversation, get_conversation
 from ..general import log_command
-from spreadsheet import Spreadsheet, systems
 
 # States of conversation
 [

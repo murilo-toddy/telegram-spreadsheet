@@ -6,6 +6,8 @@ from telegram.ext import (
     CallbackContext,
     ConversationHandler,
 )
+
+from spreadsheet import systems
 from .generic import (
     get_default_system_message,
     timeout,
@@ -15,7 +17,6 @@ from .generic import (
     get_task_lister_text,
 )
 from ..general import log_command
-from spreadsheet import systems
 
 # States of conversation
 SYSTEM, SUBSYSTEM, TASK = range(3)

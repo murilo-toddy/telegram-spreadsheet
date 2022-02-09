@@ -1,11 +1,12 @@
 from telegram.ext import CommandHandler, CallbackQueryHandler
-import commands.subsystems.task_conclude as task_conclude
-import commands.subsystems.task_start as task_start
-import commands.subsystems.task_register as task_register
-import commands.subsystems.task_list as task_list
+
 import commands.general as general
-from spreadsheet import commands
 import commands.help as help_cmd
+import commands.subsystems.task_conclude as task_conclude
+import commands.subsystems.task_list as task_list
+import commands.subsystems.task_register as task_register
+import commands.subsystems.task_start as task_start
+from spreadsheet import commands
 
 
 # Registers command and callback handlers into bot

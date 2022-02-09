@@ -1,8 +1,9 @@
 from telegram import Update, ParseMode, ReplyKeyboardRemove, ReplyKeyboardMarkup
 from telegram.ext import CallbackContext
-from spreadsheet import commands
-from config import COMMANDS_SHEET_ID
+
 import bot
+from config import COMMANDS_SHEET_ID
+from spreadsheet import commands
 
 
 # Registers execution of certain command
