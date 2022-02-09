@@ -6,42 +6,47 @@ from .generic import get_task_lister_text
 from ..general import send_message, log_command
 
 
+# Shortens inline keyboard creation process
+def __create_keyboard(button_name: str, callback: str) -> InlineKeyboardButton:
+    return InlineKeyboardButton(button_name, callback_data=callback)
+
+
+# Sends a message with an inline keyboard associated
+def __reply_keyboard(update: Update, ctx: CallbackContext, text: str, keyboard: InlineKeyboardMarkup) -> None:
+    ctx.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=keyboard, parse_mode=ParseMode.HTML)
+
+
+# System or subsystem selector
 def task_lister(update: Update, ctx: CallbackContext, args: list[str]) -> None:
     log_command("list task")
     sub = args[0].strip().lower()
+
     if sub == "ele":
+        # Electric subsystems lister
         subsystems = [
-            [
-                InlineKeyboardButton("Baterias", callback_data="list bt"),
-                InlineKeyboardButton("Powertrain", callback_data="list pt"),
-            ],
-            [
-                InlineKeyboardButton("Hardware", callback_data="list hw"),
-                InlineKeyboardButton("Software", callback_data="list sw"),
-            ],
+            [__create_keyboard("Baterias", "list bt"), __create_keyboard("Powertrain", "list pt")],
+            [__create_keyboard("Hardware", "list hw"), __create_keyboard("Software", "list sw")],
         ]
-        ctx.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text="<b>Elétrica</b>\n\n"
-                 "O sistema da elétrica possui os seguintes subsistemas:\n"
-                 "- Baterias\n- Powertrain\n- Hardware\n- Software\n\n"
-                 "Escolha o subsistema que deseja listar as tarefas",
-            reply_markup=InlineKeyboardMarkup(subsystems),
-            parse_mode=ParseMode.HTML,
+        reply_message_text = (
+            "<b>Elétrica</b>\n\n"
+            "O sistema da elétrica possui os seguintes subsistemas:\n"
+            "- Baterias\n- Powertrain\n- Hardware\n- Software\n\n"
+            "Escolha o subsistema que deseja listar as tarefas"
         )
+        __reply_keyboard(update, ctx, reply_message_text, InlineKeyboardMarkup(subsystems))
 
     elif sub == "mec":
-        subsystems = [[InlineKeyboardButton("Chassi", callback_data="list ch")]]
-        ctx.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text="<b>Mecânica</b>\n\n"
-                 "O sistema da mecânica possui os seguintes subsistemas:\n"
-                 "- Chassi\n\n"
-                 "Escolha o subsistema que deseja listar as tarefas",
-            reply_markup=InlineKeyboardMarkup(subsystems),
-            parse_mode=ParseMode.HTML,
+        # Mechanics subsystem lister
+        subsystems = [[__create_keyboard("Chassi", "list ch")]]
+        reply_message_text = (
+            "<b>Mecânica</b>\n\n"
+            "O sistema da mecânica possui os seguintes subsistemas:\n"
+            "- Chassi\n\n"
+            "Escolha o subsistema que deseja listar as tarefas"
         )
+        __reply_keyboard(update, ctx, reply_message_text, InlineKeyboardMarkup(subsystems))
 
+    # Subsystem selected
     elif sub in systems["ele"]["sub"].keys():
         send_message(update, ctx, get_task_lister_text("ele", sub))
 
@@ -52,22 +57,17 @@ def task_lister(update: Update, ctx: CallbackContext, args: list[str]) -> None:
         send_message(update, ctx, "Sistema ou subsistema não encontrado")
 
 
+# Generic task lister message
 def subsystem_task_lister(update: Update, ctx: CallbackContext) -> None:
+    # Arguments passed
     if args := ctx.args:
         task_lister(update, ctx, args)
+
+    # System lister
     else:
-        available_systems = [
-            [
-                InlineKeyboardButton("Elétrica", callback_data="list ele"),
-                InlineKeyboardButton("Mecânica", callback_data="list mec"),
-            ]
-        ]
-        ctx.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text="Escolha um sistema ou subsistema\n\n<code>/list &lt;subsistema&gt;</code>",
-            reply_markup=InlineKeyboardMarkup(available_systems),
-            parse_mode=ParseMode.HTML,
-        )
+        reply_message_text = "Escolha um sistema ou subsistema\n\n<code>/list &lt;subsistema&gt;</code>"
+        available_systems = [[__create_keyboard("Elétrica", "list ele"), __create_keyboard("Mecânica", "list mec")]]
+        __reply_keyboard(update, ctx, reply_message_text, InlineKeyboardMarkup(available_systems))
 
 
 def query_handler(update: Update, ctx: CallbackContext) -> None:
