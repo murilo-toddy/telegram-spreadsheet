@@ -18,6 +18,7 @@ from ..general import log_command, reply_text
 SYSTEM, SUBSYSTEM, TASK, DIFFICULTY, DURATION, COMMENTS = range(6)
 
 
+# Loads configuration and replies text when a system is selected
 def __load_system_info(update: Update, selected_system: str) -> None:
     if selected_system not in available_systems:
         update.message.reply_text("Sistema não encontrado\nTente novamente", reply_markup=ReplyKeyboardRemove())
@@ -29,6 +30,21 @@ def __load_system_info(update: Update, selected_system: str) -> None:
     conversation.system = selected_system
     conversation.dict = systems[selected_system]["sub"]
     conversation.ss = systems[selected_system]["ss"]
+
+
+# Loads configuration and replies text when a subsystem is selected
+def __load_subsystem_info(update: Update, selected_subsystem: str) -> None:
+    # TODO verify that subsystem is valid
+    conversation = get_conversation(update)
+    conversation.subsystem = selected_subsystem
+    conversation.tasks = get_task_lister_text(conversation.system, selected_subsystem)
+
+    text = (
+        f"<b>Subsistema: {conversation.dict[selected_subsystem]['name']}</b>\n\n"
+        f"{conversation.tasks}\n\n"
+        "Selecione da lista acima o número da tarefa que deseja concluir"
+    )
+    update.message.reply_text(text, reply_markup=ReplyKeyboardRemove(), parse_mode=ParseMode.HTML)
 
 
 # Main function in task concluding command
@@ -46,13 +62,15 @@ def conclude_task(update: Update, ctx: CallbackContext) -> int:
 
         elif arg in list(electric_subsystems.keys()):
             # Electric subsystem selected
-            reply_text(update, "tentando selecionar eletrica")
-            return SYSTEM
+            __load_system_info(update, selected_system="ele")
+            __load_subsystem_info(update, selected_subsystem=arg)
+            return TASK
 
         elif arg in list(mechanics_subsystem.keys()):
             # Mechanics subsystem selected
-            reply_text(update, "tentando selecionar mec")
-            return SYSTEM
+            __load_system_info(update, selected_system="mec")
+            __load_subsystem_info(update, selected_subsystem=arg)
+            return TASK
 
     else:
         # No/invalid arguments passed, prompts for system
@@ -69,17 +87,7 @@ def subsystem_selector(update: Update, ctx: CallbackContext) -> int:
 
 def task_selector(update: Update, ctx: CallbackContext) -> int:
     selected_subsystem = update.message.text
-
-    conversation = get_conversation(update)
-    conversation.subsystem = selected_subsystem
-    conversation.tasks = get_task_lister_text(conversation.system, selected_subsystem)
-
-    text = (
-        f"<b>Subsistema: {conversation.dict[selected_subsystem]['name']}</b>\n\n"
-        f"{conversation.tasks}\n\n"
-        "Selecione da lista acima o número da tarefa que deseja concluir"
-    )
-    update.message.reply_text(text, reply_markup=ReplyKeyboardRemove(), parse_mode=ParseMode.HTML)
+    __load_subsystem_info(update, selected_subsystem)
     return TASK
 
 
