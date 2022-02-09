@@ -51,8 +51,8 @@ def conclude_task(update: Update, ctx: CallbackContext) -> int:
             return TASK
 
     # No/invalid arguments passed, prompts for system
-    task, desc = "Concluir tarefa", "Modifica o status da tarefa para Concluído na planilha do sistema"
-    reply_text(update, get_default_system_message(task, desc), keyboards["system"])
+    task_name, desc = "Concluir tarefa", "Modifica o status da tarefa para Concluído na planilha do sistema"
+    reply_text(update, get_default_system_message(task_name, desc), keyboards["system"])
     return SYSTEM
 
 

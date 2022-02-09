@@ -25,6 +25,35 @@ keyboards = {
 }
 
 
+# System or subsystem lister when starting conversation
+# TODO write extraction method
+def check_for_system_or_subsystem():
+    pass
+
+
+# Loads configuration and replies text when a system is selected
+def load_system_info(update: Update, selected_system: str) -> any:
+    keyboard = keyboards["subsystem"][selected_system]
+    reply_text(update, f"Sistema {selected_system} selecionado\nInforme o subsistema", keyboard)
+    conversation = get_conversation(update)
+    conversation.system = selected_system
+    conversation.dict = systems[selected_system]["sub"]
+    conversation.ss = systems[selected_system]["ss"]
+
+
+# Loads configuration and replies text when a subsystem is selected
+def load_subsystem_info(update: Update, selected_subsystem: str) -> None:
+    conversation = get_conversation(update)
+    conversation.subsystem = selected_subsystem
+    conversation.tasks = get_task_lister_text(conversation.system, selected_subsystem)
+
+    reply_message = (
+        f"{conversation.tasks}\n\n"
+        "Selecione da lista acima o número da tarefa que deseja executar a ação"
+    )
+    reply_text(update, reply_message)
+
+
 # Project and task listing methods
 # TODO refactor functions
 def get_subtasks(data: list, pos: int, counter: int) -> tuple[str, int, int]:
@@ -53,29 +82,6 @@ def get_task_lister_text(system: str, subsystem: str) -> str:
                 string += f"\n<i>{data[i][0]}</i>\n" + tasks
             i = pos
     return string
-
-
-# Loads configuration and replies text when a system is selected
-def load_system_info(update: Update, selected_system: str) -> any:
-    keyboard = keyboards["subsystem"][selected_system]
-    reply_text(update, f"Sistema {selected_system} selecionado\nInforme o subsistema", keyboard)
-    conversation = get_conversation(update)
-    conversation.system = selected_system
-    conversation.dict = systems[selected_system]["sub"]
-    conversation.ss = systems[selected_system]["ss"]
-
-
-# Loads configuration and replies text when a subsystem is selected
-def load_subsystem_info(update: Update, selected_subsystem: str) -> None:
-    conversation = get_conversation(update)
-    conversation.subsystem = selected_subsystem
-    conversation.tasks = get_task_lister_text(conversation.system, selected_subsystem)
-
-    reply_message = (
-        f"{conversation.tasks}\n\n"
-        "Selecione da lista acima o número da tarefa que deseja concluir"
-    )
-    reply_text(update, reply_message)
 
 
 # Instantiates a new conversation based on sender's username

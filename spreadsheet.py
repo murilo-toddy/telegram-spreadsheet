@@ -80,7 +80,6 @@ class SystemSpreadsheet(Spreadsheet):
     register_task: Adds new task to spreadsheet
     start_task: Updates task state to Fazendo
     """
-
     def __init__(self, sheet_id: str, scope: list, auth_file: str, debug: bool):
         super().__init__(sheet_id, scope, auth_file, debug)
 
@@ -139,7 +138,6 @@ class ElectricSpreadsheet(SystemSpreadsheet):
         # Adds related data to spreadsheet
         ss.update_acell(f"B{index}", user_data.task)
         ss.update_acell(f"C{index}", "A fazer")
-        ss.update_acell(f"D{index}", date.today().strftime("%d/%m/%Y"))
         ss.update_acell(f"E{index}", user_data.duration)
         ss.update_acell(f"F{index}", user_data.difficulty)
         ss.update_acell(f"J{index}", user_data.documents)
@@ -154,6 +152,7 @@ class ElectricSpreadsheet(SystemSpreadsheet):
 
         # Updates status and returns
         ss.update_acell(f"C{index + 1}", "Fazendo")
+        ss.update_acell(f"D{index + 1}", date.today().strftime("%d/%m/%Y"))
 
 
 # Commands spreadsheet
