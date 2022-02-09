@@ -1,12 +1,29 @@
 from telegram.ext import CallbackContext, ConversationHandler
-from telegram import ReplyKeyboardRemove, Update
+from telegram import ReplyKeyboardRemove, Update, ReplyKeyboardMarkup
 from .conversation import Conversation
+from utils import available_systems, electric_subsystems, mechanics_subsystem
 
 
 # A dictionary to store information about each conversation, identified by the sender's telegram ID
 conversation_task = {}
 
-# Instanciates a new conversation based on sender's username
+
+# Returns keyboard markup based on dictionary
+def __create_keyboard(elements: list) -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup([elements[i::2] for i in range(2)])
+
+
+# System and subsystem default keyboards
+keyboards = {
+    "system": __create_keyboard(available_systems),
+    "subsystem": {
+        "ele": __create_keyboard(list(electric_subsystems.keys())),
+        "mec": __create_keyboard(list(mechanics_subsystem.keys())),
+    }
+}
+
+
+# Instantiates a new conversation based on sender's username
 def load_conversation(update: Update) -> None:
     conversation_task[update.effective_user.username] = Conversation()
 
@@ -26,7 +43,7 @@ def get_default_system_message(mode: str, description: str) -> str:
     )
 
 
-# Function executed whenever a timeout occours
+# Function executed whenever a timeout occurs
 def timeout(update: Update, ctx: CallbackContext) -> int:
     update.message.reply_text(
         "Limite de tempo excedido\nInicie o processo novamente", reply_markup=ReplyKeyboardRemove()

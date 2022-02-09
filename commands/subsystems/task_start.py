@@ -1,6 +1,4 @@
-import gspread
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove, ParseMode
-from gspread import Worksheet
 from telegram.ext import (
     MessageHandler,
     Filters,
@@ -8,17 +6,13 @@ from telegram.ext import (
     CallbackContext,
     ConversationHandler,
 )
-
 from .generic import get_default_system_message, timeout, cancel, load_conversation, get_conversation
 from .task_list import get_task_lister_text
 from ..general import log_command
-from spreadsheet import systems, Spreadsheet
+from spreadsheet import systems
 
 # States of conversation
 SYSTEM, SUBSYSTEM, TASK = range(3)
-
-# Dictionary containing all needed information about the task
-# task_start = {"ss": Spreadsheet, "dict": dict, "system": str, "subsystem": str, "tasks": str}
 
 
 # Home function
@@ -90,6 +84,7 @@ def task(update: Update, ctx: CallbackContext) -> int:
         task = int(update.message.text)
         task_row = [row for row in conversation.tasks.split("\n") if row.startswith(f"{task}")][0]
         task_name = task_row.split(" - ")[1]
+        conversation.task = task_name
     except:
         # Task is invalid
         update.message.reply_text("Forneça um número válido")
@@ -97,14 +92,7 @@ def task(update: Update, ctx: CallbackContext) -> int:
 
     # Finds task index in spreadsheet
     # TODO create method in electric spreadsheet
-    ss: Worksheet = conversation.ss.sheet(conversation.subsystem)
-    data = ss.get_all_values()
-    for index, row in enumerate(data):
-        if row[1] == task_name:
-            break
-
-    # Updates status and returns
-    ss.update_acell(f"C{index+1}", "Fazendo")
+    conversation.ss.start_task(conversation)
     update.message.reply_text(f"Tarefa {task_name} iniciada com sucesso!")
     return ConversationHandler.END
 

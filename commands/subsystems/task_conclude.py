@@ -8,10 +8,10 @@ from telegram.ext import (
 )
 from gspread import Worksheet
 from spreadsheet import systems
-from utils import available_systems
-from .generic import timeout, cancel, get_default_system_message, get_conversation, load_conversation
+from utils import available_systems, electric_subsystems, mechanics_subsystem
+from .generic import timeout, cancel, get_default_system_message, get_conversation, load_conversation, keyboards
 from .task_list import get_task_lister_text
-from ..general import log_command
+from ..general import log_command, reply_text
 
 
 # States of conversation
@@ -26,21 +26,25 @@ def conclude_task(update: Update, ctx: CallbackContext) -> int:
     load_conversation(update)
 
     # TODO add possibility to pass system or subsystem directly as argument
-    if not ctx.args:
-        # Prompts for system
-        # TODO create default keyboard for systems and subsystems
-        systems = [available_systems]
-        update.message.reply_text(
-            get_default_system_message(
-                "Concluir tarefa", "Modifica o status da tarefa para Concluído na planilha de mapeamento do sistema"
-            ),
-            parse_mode=ParseMode.HTML,
-            reply_markup=ReplyKeyboardMarkup(systems),
-        )
-        return SYSTEM
+    if ctx.args:
+        arg = ctx.args[0]
+        if arg in available_systems:
+            reply_text(update, "Tentando selecionar sistema")
+            return SYSTEM
+
+        elif arg in list(electric_subsystems.keys()):
+            reply_text(update, "tentando selecionar eletrica")
+            return SYSTEM
+
+        elif arg in list(mechanics_subsystem.keys()):
+            reply_text(update, "tentando selecionar mec")
+            return SYSTEM
 
     else:
-        update.message.reply_text("Not supported yet")
+        # Prompts for system
+        task, desc = "Concluir tarefa", "Modifica o status da tarefa para Concluído na planilha do sistema"
+        reply_text(update, get_default_system_message(task, desc), keyboards["system"])
+        return SYSTEM
 
 
 def subsystem_selector(update: Update, ctx: CallbackContext) -> int:

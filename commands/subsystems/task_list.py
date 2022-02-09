@@ -3,9 +3,9 @@ from telegram.ext import CallbackContext
 from ..general import send_message
 from spreadsheet import systems
 
+
 # TODO refactor file
 def get_subtasks(data: list, pos: int, counter: int) -> tuple[str, int, int]:
-    # sourcery skip: equality-identity, use-assigned-variable
     tasks = ""
     i = pos
     while i < len(data) and (not data[i][0] or i == pos):

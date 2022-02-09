@@ -1,4 +1,5 @@
 import gspread
+from datetime import date
 from oauth2client.service_account import ServiceAccountCredentials
 from config import COMMANDS_SHEET_ID, ELE_SHEET_ID, MEC_SHEET_ID
 from utils import electric_subsystems, mechanics_subsystem
@@ -13,7 +14,7 @@ SHEET_SCOPE = [
 
 class Spreadsheet:
     """
-    Class used to comunicate with Google spreadsheets
+    Class used to communicate with Google spreadsheets
 
     Parameters
     ----------
@@ -27,7 +28,6 @@ class Spreadsheet:
     ss - gspread.Spreadsheet: Google spreadsheet
     sheets - {str: gspread.Worksheet}: Dictionary containing
     """
-
     def __init__(self, sheet_id: str, scope: list, auth_file: str, debug: bool):
         self.__debug = debug
 
@@ -66,26 +66,90 @@ class Spreadsheet:
         return self.sheets[sheet_name]
 
 
-class ElectricSpreadsheet(Spreadsheet):
+class SystemSpreadsheet(Spreadsheet):
     """
-    Class to handle spreadsheet manipulation related
-    to Electric System
+    Interface to handle spreadsheet manipulation related
+    to a generic system
 
     Methods
     -------
     conclude_task: Updates task state to Concluído
+    register_task: Adds new task to spreadsheet
+    start_task: Updates task state to Fazendo
     """
-
     def __init__(self, sheet_id: str, scope: list, auth_file: str, debug: bool):
         super().__init__(sheet_id, scope, auth_file, debug)
 
-    def conclude_task(self, conversation) -> None:
-        sheet = self.sheet(conversation.subsystem)
-        index = conversation.index + 1
+    @staticmethod
+    def conclude_task(user_data) -> None:
+        pass
+
+    @staticmethod
+    def register_task(user_data) -> None:
+        pass
+
+    @staticmethod
+    def start_task(user_data) -> None:
+        pass
+
+
+class ElectricSpreadsheet(SystemSpreadsheet):
+    def __init__(self, sheet_id: str, scope: list, auth_file: str, debug: bool):
+        super().__init__(sheet_id, scope, auth_file, debug)
+
+    @staticmethod
+    def conclude_task(user_data) -> None:
+        sheet = user_data.ss.sheet(user_data.subsystem)
+        index = user_data.index + 1
 
         sheet.update_acell(f"C{index}", "Concluído")
-        sheet.update_acell(f"H{index}", conversation.difficulty)
-        sheet.update_acell(f"I{index}", f"{conversation.row[8]}\n{conversation.comments}")
+        sheet.update_acell(f"H{index}", user_data.difficulty)
+        sheet.update_acell(f"I{index}", f"{user_data.row[8]}\n{user_data.comments}")
+
+    # Returns project index in spreadsheet
+    @staticmethod
+    def __find_project_index(proj, data) -> int:
+        for index, p in enumerate(data):
+            if p[0] == proj:
+                return index + 1
+        return -1
+
+    @staticmethod
+    def register_task(user_data) -> None:
+        ss: gspread.Worksheet = user_data.ss.sheet(user_data.subsystem)
+        data = ss.get_all_values()
+
+        if user_data.new_project:
+            # Selects last spreadsheet row
+            index = len(data) + 1
+            ss.update_acell(f"A{index}", user_data.project)
+        else:
+            project_index = index = ElectricSpreadsheet.__find_project_index(user_data.project, data)
+            # Finds last row related to project
+            while not data[index][0]:
+                index += 1
+            index += 1
+            ss.insert_row([], index=index)
+            ss.merge_cells(f"A{project_index}:A{index}")
+
+        # Adds related data to spreadsheet
+        ss.update_acell(f"B{index}", user_data.task)
+        ss.update_acell(f"C{index}", "A fazer")
+        ss.update_acell(f"D{index}", date.today().strftime("%d/%m/%Y"))
+        ss.update_acell(f"E{index}", user_data.duration)
+        ss.update_acell(f"F{index}", user_data.difficulty)
+        ss.update_acell(f"J{index}", user_data.documents)
+
+    @staticmethod
+    def start_task(user_data) -> None:
+        ss: gspread.Worksheet = user_data.ss.sheet(user_data.subsystem)
+        data = ss.get_all_values()
+        for index, row in enumerate(data):
+            if row[1] == user_data.task:
+                break
+
+        # Updates status and returns
+        ss.update_acell(f"C{index+1}", "Fazendo")
 
 
 # Commands spreadsheet
