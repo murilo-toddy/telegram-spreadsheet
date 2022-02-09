@@ -87,7 +87,7 @@ As informações devem seguir o seguinte formato:
 ```
 
 Para membros da equipe, a configuração utilizada atualmente pode ser encontrada
-[neste documento](https://docs.google.com/document/d/1jkoGH2Mhs4WjjFI6ZGeAnPX5Zw6AEdU5UeYl_bxWby8/edit).
+[neste link](https://drive.google.com/drive/folders/1xBYfFu1UMstL7kg57yETpns6aYJsKRio?ths=true).
 
 ## Dependências
 

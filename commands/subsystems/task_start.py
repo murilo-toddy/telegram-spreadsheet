@@ -1,6 +1,4 @@
-import gspread
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove, ParseMode
-from gspread import Worksheet
 from telegram.ext import (
     MessageHandler,
     Filters,
@@ -12,13 +10,10 @@ from telegram.ext import (
 from .generic import get_default_system_message, timeout, cancel, load_conversation, get_conversation
 from .task_list import get_task_lister_text
 from ..general import log_command
-from spreadsheet import systems, Spreadsheet
+from spreadsheet import systems
 
 # States of conversation
 SYSTEM, SUBSYSTEM, TASK = range(3)
-
-# Dictionary containing all needed information about the task
-# task_start = {"ss": Spreadsheet, "dict": dict, "system": str, "subsystem": str, "tasks": str}
 
 
 # Home function

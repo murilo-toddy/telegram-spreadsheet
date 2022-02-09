@@ -10,7 +10,7 @@ def log_command(cmd: str) -> None:
     print(f"\n  [!!] Command {cmd} called")
 
 
-# Default message senting method, using HTML format
+# Default message sending method, using HTML format
 def send_message(update: Update, ctx: CallbackContext, text: str) -> None:
     ctx.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=ParseMode.HTML)
 
@@ -19,7 +19,7 @@ def send_message(update: Update, ctx: CallbackContext, text: str) -> None:
 def spreadsheet_return_text(update: Update, ctx: CallbackContext) -> None:
     cmd = update.message.text[1:]
     cmds = [cmds[0] for cmds in commands.sheet("cmd").get_all_values()[1:]]
-    print(f"[!!] Command {cmd} called")
+    log_command(cmd)
     index = cmds.index(cmd) + 1
     send_message(update, ctx, commands.sheet("cmd").get_all_values()[index][1])
 
@@ -32,11 +32,6 @@ def update_sheet_commands(update: Update, ctx: CallbackContext) -> None:
 
 # Sends Bot Commands spreadsheet link
 def send_sheet(update: Update, ctx: CallbackContext) -> None:
-    send_message(
-        update,
-        ctx,
-        (
-            f"<a href='https://docs.google.com/spreadsheets/d/{COMMANDS_SHEET_ID}/edit#gid=0'>"
-            "Planilha de Comandos</a>"
-        ),
-    )
+    response_text = f"<a href='https://docs.google.com/spreadsheets/d/{COMMANDS_SHEET_ID}" \
+                    "/edit#gid=0'>Planilha de Comandos</a>"
+    send_message(update, ctx, response_text)

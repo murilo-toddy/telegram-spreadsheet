@@ -30,23 +30,8 @@ from spreadsheet import Spreadsheet, systems
     CONFIRMATION,
 ] = range(9)
 
-# New task info
-# task_info = {
-#     "system": "",
-#     "subsystem": "",
-#     "project": "",
-#     "new_project": False,
-#     "task": "",
-#     "diff": "",
-#     "duration": "",
-#     "docs": "",
-# }
 
-# New task env info
-# new_task = {"ss": Spreadsheet, "dict": None, "task": task_info, "proj": ""}
 # TODO extract all message sending commands to generic file
-
-
 def add_task(update: Update, ctx: CallbackContext) -> int:
     log_command("register")
     load_conversation(update)
@@ -133,7 +118,6 @@ def project(update: Update, ctx: CallbackContext) -> int:
 
 
 def task(update: Update, ctx: CallbackContext) -> int:
-    global new_task
     conversation = get_conversation(update)
     conversation.task = update.message.text
     update.message.reply_text("Forneça uma estimativa (0 - 10) para a dificuldade desta tarefa")
@@ -207,7 +191,6 @@ def confirmation(update: Update, ctx: CallbackContext) -> int:
     if answer == "sim":
         conversation = get_conversation(update)
         conversation.ss.register_task(conversation)
-        # add_task_to_sheet(update)
         update.message.reply_text("Tarefa adicionada com sucesso", reply_markup=ReplyKeyboardRemove())
     else:
         update.message.reply_text("Processo cancelado", reply_markup=ReplyKeyboardRemove())
