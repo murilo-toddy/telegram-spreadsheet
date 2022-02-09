@@ -24,7 +24,7 @@ SYSTEM, SUBSYSTEM, TASK = range(3)
 # Home function
 # TODO Enable subsystem arguments for faster starting
 def start_task(update: Update, ctx: CallbackContext) -> int:
-    log_command("start")
+    log_command("start task")
     load_conversation(update)
     if not ctx.args:
         system = [["ele", "mec"]]

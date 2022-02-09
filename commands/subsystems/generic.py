@@ -45,6 +45,16 @@ def __create_keyboard(elements: list) -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup([elements[i::2] for i in range(2)], one_time_keyboard=True)
 
 
+# System and subsystem default keyboards
+keyboards = {
+    "system": __create_keyboard(available_systems),
+    "subsystem": {
+        "ele": __create_keyboard(list(electric_subsystems.keys())),
+        "mec": __create_keyboard(list(mechanics_subsystem.keys())),
+    }
+}
+
+
 # Loads configuration and replies text when a system is selected
 def load_system_info(update: Update, selected_system: str) -> any:
     keyboard = keyboards["subsystem"][selected_system]
@@ -57,27 +67,15 @@ def load_system_info(update: Update, selected_system: str) -> any:
 
 # Loads configuration and replies text when a subsystem is selected
 def load_subsystem_info(update: Update, selected_subsystem: str) -> None:
-    # TODO verify that subsystem is valid
     conversation = get_conversation(update)
     conversation.subsystem = selected_subsystem
     conversation.tasks = get_task_lister_text(conversation.system, selected_subsystem)
 
-    text = (
-        f"<b>Subsistema: {conversation.dict[selected_subsystem]['name']}</b>\n\n"
+    reply_message = (
         f"{conversation.tasks}\n\n"
         "Selecione da lista acima o número da tarefa que deseja concluir"
     )
-    update.message.reply_text(text, reply_markup=ReplyKeyboardRemove(), parse_mode=ParseMode.HTML)
-
-
-# System and subsystem default keyboards
-keyboards = {
-    "system": __create_keyboard(available_systems),
-    "subsystem": {
-        "ele": __create_keyboard(list(electric_subsystems.keys())),
-        "mec": __create_keyboard(list(mechanics_subsystem.keys())),
-    }
-}
+    reply_text(update, reply_message)
 
 
 # Instantiates a new conversation based on sender's username

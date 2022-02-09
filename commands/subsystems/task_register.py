@@ -33,7 +33,7 @@ from spreadsheet import Spreadsheet, systems
 
 # TODO extract all message sending commands to generic file
 def add_task(update: Update, ctx: CallbackContext) -> int:
-    log_command("register")
+    log_command("register task")
     load_conversation(update)
     system_selector = [["ele", "mec"]]
     update.message.reply_text(

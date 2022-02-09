@@ -1,10 +1,12 @@
 from telegram import Update, ParseMode, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext
-from ..general import send_message
+from .generic import get_task_lister_text
+from ..general import send_message, log_command
 from spreadsheet import systems
 
 
 def task_lister(update: Update, ctx: CallbackContext, args: list[str]) -> None:
+    log_command("list task")
     sub = args[0].strip().lower()
     if sub == "ele":
         subsystems = [
@@ -53,7 +55,7 @@ def subsystem_task_lister(update: Update, ctx: CallbackContext) -> None:
     if args := ctx.args:
         task_lister(update, ctx, args)
     else:
-        systems = [
+        available_systems = [
             [
                 InlineKeyboardButton("Elétrica", callback_data="list ele"),
                 InlineKeyboardButton("Mecânica", callback_data="list mec"),
@@ -62,7 +64,7 @@ def subsystem_task_lister(update: Update, ctx: CallbackContext) -> None:
         ctx.bot.send_message(
             chat_id=update.effective_chat.id,
             text="Escolha um sistema ou subsistema\n\n<code>/list &lt;subsistema&gt;</code>",
-            reply_markup=InlineKeyboardMarkup(systems),
+            reply_markup=InlineKeyboardMarkup(available_systems),
             parse_mode=ParseMode.HTML,
         )
 
