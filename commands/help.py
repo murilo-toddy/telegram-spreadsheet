@@ -3,7 +3,6 @@ from telegram.ext import CallbackContext
 
 from commands.general import send_message
 
-# TODO Write better text responses for commands
 # Dictionary containing available commands
 available_commands = {
     "help": ("Lista informações a respeito dos comandos disponíveis"),
@@ -25,9 +24,41 @@ available_commands = {
         "Por outro lado, pode-se utilizar <code>/list</code> sem argumentos para receber "
         "uma lista com os sistemas e subsistemas disponíveis."
     ),
-    "add": ("Adiciona uma nova tarefa na planilha"),
-    "start": ("Muda o status de uma tarefa para Em Andamento"),
-    "end": ("Muda o status de uma tarefa para finalizado"),
+    "add": (
+        "Adiciona uma nova tarefa na planilha de atividades do sistema\n\n"
+        "Ao selecionar o subsistema, o bot responderá com a lista de projetos ativos.\n"
+        "É possível então selecionar um dos projetos já existentes através de seu número ou "
+        "criar um projeto totalmente novo, fornecendo seu nome.\n"
+        "Em seguida, serão realizadas perguntas a respeito da atividade a ser incluída.\n\n"
+        "Ao finalizar a conversa com o bot, a nova atividade será adicionada imediatamente na planilha "
+        "de atividades do sistema.\n\n"
+        "É possível executar <code>/add &lt;subsistema&gt;</code> para "
+        "selecionar um subsistema imediatamente. O subsistema deve ser fornecido "
+        "através de sua abreviação (i.e. <code>/add sw</code>).\n\n"
+        "Por outro lado, pode-se utilizar <code>/add</code> sem argumentos para receber "
+        "uma lista com os sistemas e subsistemas disponíveis."
+    ),
+    "start": (
+        "Muda o status de uma tarefa da planilha de atividades do sistema para Fazendo\n\n"
+        "Ao selecionar o subsistema, o bot responderá com a lista de tarefas ativas. Ao selecionar "
+        "a desejada, esta terá seu status atualizado automaticamente na planilha.\n\n"
+        "É possível executar <code>/start &lt;subsistema&gt;</code> para "
+        "obter as tarefas de um subsistema imediatamente. O subsistema deve ser fornecido "
+        "através de sua abreviação (i.e. <code>/start sw</code>).\n\n"
+        "Por outro lado, pode-se utilizar <code>/start</code> sem argumentos para receber "
+        "uma lista com os sistemas e subsistemas disponíveis."
+    ),
+    "end": (
+        "Muda o status de uma tarefa da planilha de atividades do sistema para Concluído\n\n"
+        "Ao selecionar o subsistema, o bot responderá com a lista de tarefas ativas. Ao selecionar "
+        "a desejada, serão realizadas algumas perguntas a respeito do desenvolvimento desta, que "
+        "serão automaticamente adicionadas na planilha.\n\n"
+        "É possível executar <code>/end &lt;subsistema&gt;</code> para "
+        "obter as tarefas de um subsistema imediatamente. O subsistema deve ser fornecido "
+        "através de sua abreviação (i.e. <code>/end sw</code>).\n\n"
+        "Por outro lado, pode-se utilizar <code>/end</code> sem argumentos para receber "
+        "uma lista com os sistemas e subsistemas disponíveis."
+    ),
 }
 
 

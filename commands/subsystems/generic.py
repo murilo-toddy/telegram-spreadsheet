@@ -10,6 +10,21 @@ from ..general import reply_text
 conversation_task = {}
 
 
+# Returns keyboard markup based on dictionary
+def __create_keyboard(elements: list) -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup([elements[i::2] for i in range(2)], one_time_keyboard=True)
+
+
+# System and subsystem default keyboards
+keyboards = {
+    "system": __create_keyboard(available_systems),
+    "subsystem": {
+        "ele": __create_keyboard(list(electric_subsystems.keys())),
+        "mec": __create_keyboard(list(mechanics_subsystem.keys())),
+    }
+}
+
+
 # Project and task listing methods
 # TODO refactor functions
 def get_subtasks(data: list, pos: int, counter: int) -> tuple[str, int, int]:
@@ -38,21 +53,6 @@ def get_task_lister_text(system: str, subsystem: str) -> str:
                 string += f"\n<i>{data[i][0]}</i>\n" + tasks
             i = pos
     return string
-
-
-# Returns keyboard markup based on dictionary
-def __create_keyboard(elements: list) -> ReplyKeyboardMarkup:
-    return ReplyKeyboardMarkup([elements[i::2] for i in range(2)], one_time_keyboard=True)
-
-
-# System and subsystem default keyboards
-keyboards = {
-    "system": __create_keyboard(available_systems),
-    "subsystem": {
-        "ele": __create_keyboard(list(electric_subsystems.keys())),
-        "mec": __create_keyboard(list(mechanics_subsystem.keys())),
-    }
-}
 
 
 # Loads configuration and replies text when a system is selected

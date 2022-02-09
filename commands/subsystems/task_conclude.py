@@ -32,7 +32,7 @@ def conclude_task(update: Update, ctx: CallbackContext) -> int:
     log_command("conclude task")
 
     if ctx.args:
-        arg = ctx.args[0]
+        arg = ctx.args[0].strip().lower()
         if arg in available_systems:
             # System selected
             load_system_info(update, selected_system=arg)
