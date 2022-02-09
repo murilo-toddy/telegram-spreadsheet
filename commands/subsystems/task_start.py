@@ -6,7 +6,6 @@ from telegram.ext import (
     CallbackContext,
     ConversationHandler,
 )
-
 from .generic import get_default_system_message, timeout, cancel, load_conversation, get_conversation
 from .task_list import get_task_lister_text
 from ..general import log_command

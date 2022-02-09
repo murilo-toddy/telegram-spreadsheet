@@ -1,10 +1,26 @@
 from telegram.ext import CallbackContext, ConversationHandler
-from telegram import ReplyKeyboardRemove, Update
+from telegram import ReplyKeyboardRemove, Update, ReplyKeyboardMarkup
 from .conversation import Conversation
+from utils import available_systems, electric_subsystems, mechanics_subsystem
 
 
 # A dictionary to store information about each conversation, identified by the sender's telegram ID
 conversation_task = {}
+
+
+# Returns keyboard markup based on dictionary
+def __create_keyboard(elements: list) -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup([elements[i::2] for i in range(2)])
+
+
+# System and subsystem default keyboards
+keyboards = {
+    "system": __create_keyboard(available_systems),
+    "subsystem": {
+        "ele": __create_keyboard(list(electric_subsystems.keys())),
+        "mec": __create_keyboard(list(mechanics_subsystem.keys())),
+    }
+}
 
 
 # Instantiates a new conversation based on sender's username
