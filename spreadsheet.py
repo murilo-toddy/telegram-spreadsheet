@@ -28,7 +28,6 @@ class Spreadsheet:
     ss - gspread.Spreadsheet: Google spreadsheet
     sheets - {str: gspread.Worksheet}: Dictionary containing
     """
-
     def __init__(self, sheet_id: str, scope: list, auth_file: str, debug: bool):
         self.__debug = debug
 
@@ -78,7 +77,6 @@ class SystemSpreadsheet(Spreadsheet):
     register_task: Adds new task to spreadsheet
     start_task: Updates task state to Fazendo
     """
-
     def __init__(self, sheet_id: str, scope: list, auth_file: str, debug: bool):
         super().__init__(sheet_id, scope, auth_file, debug)
 
@@ -108,7 +106,7 @@ class ElectricSpreadsheet(SystemSpreadsheet):
         sheet.update_acell(f"H{index}", user_data.difficulty)
         sheet.update_acell(f"I{index}", f"{user_data.row[8]}\n{user_data.comments}")
 
-    # TODO refactor these functions
+    # Returns project index in spreadsheet
     @staticmethod
     def __find_project_index(proj, data) -> int:
         for index, p in enumerate(data):
@@ -120,32 +118,27 @@ class ElectricSpreadsheet(SystemSpreadsheet):
     def register_task(user_data) -> None:
         ss: gspread.Worksheet = user_data.ss.sheet(user_data.subsystem)
         data = ss.get_all_values()
+
         if user_data.new_project:
+            # Selects last spreadsheet row
             index = len(data) + 1
+            ss.update_acell(f"A{index}", user_data.project)
         else:
-            index = ElectricSpreadsheet.__find_project_index(user_data.project, data)
+            project_index = index = ElectricSpreadsheet.__find_project_index(user_data.project, data)
+            # Finds last row related to project
             while not data[index][0]:
                 index += 1
             index += 1
             ss.insert_row([], index=index)
+            ss.merge_cells(f"A{project_index}:A{index}")
 
-        ss.update(
-            f"A{index}:J{index}",
-            [
-                [
-                    user_data.project,
-                    user_data.task,
-                    "A fazer",
-                    date.today().strftime("%d/%m/%Y"),
-                    user_data.duration,
-                    user_data.difficulty,
-                    "",
-                    "",
-                    "",
-                    user_data.documents,
-                ]
-            ],
-        )
+        # Adds related data to spreadsheet
+        ss.update_acell(f"B{index}", user_data.task)
+        ss.update_acell(f"C{index}", "A fazer")
+        ss.update_acell(f"D{index}", date.today().strftime("%d/%m/%Y"))
+        ss.update_acell(f"E{index}", user_data.duration)
+        ss.update_acell(f"F{index}", user_data.difficulty)
+        ss.update_acell(f"J{index}", user_data.documents)
 
     @staticmethod
     def start_task(user_data) -> None:
