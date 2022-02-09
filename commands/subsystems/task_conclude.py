@@ -1,4 +1,4 @@
-from telegram import Update, ReplyKeyboardRemove, ParseMode
+from telegram import Update, ReplyKeyboardRemove
 from telegram.ext import (
     MessageHandler,
     Filters,
@@ -7,44 +7,22 @@ from telegram.ext import (
     ConversationHandler,
 )
 from gspread import Worksheet
-from spreadsheet import systems
 from utils import available_systems, electric_subsystems, mechanics_subsystem
-from .generic import timeout, cancel, get_default_system_message, get_conversation, load_conversation, keyboards
-from .task_list import get_task_lister_text
+from .generic import (
+    timeout,
+    cancel,
+    get_default_system_message,
+    get_conversation,
+    load_conversation,
+    keyboards,
+    load_system_info,
+    load_subsystem_info
+)
 from ..general import log_command, reply_text
 
 
 # States of conversation
 SYSTEM, SUBSYSTEM, TASK, DIFFICULTY, DURATION, COMMENTS = range(6)
-
-
-# Loads configuration and replies text when a system is selected
-def __load_system_info(update: Update, selected_system: str) -> None:
-    if selected_system not in available_systems:
-        update.message.reply_text("Sistema não encontrado\nTente novamente", reply_markup=ReplyKeyboardRemove())
-        return SYSTEM
-
-    keyboard = keyboards["subsystem"][selected_system]
-    reply_text(update, f"Sistema {selected_system} selecionado\nInforme o subsistema", keyboard)
-    conversation = get_conversation(update)
-    conversation.system = selected_system
-    conversation.dict = systems[selected_system]["sub"]
-    conversation.ss = systems[selected_system]["ss"]
-
-
-# Loads configuration and replies text when a subsystem is selected
-def __load_subsystem_info(update: Update, selected_subsystem: str) -> None:
-    # TODO verify that subsystem is valid
-    conversation = get_conversation(update)
-    conversation.subsystem = selected_subsystem
-    conversation.tasks = get_task_lister_text(conversation.system, selected_subsystem)
-
-    text = (
-        f"<b>Subsistema: {conversation.dict[selected_subsystem]['name']}</b>\n\n"
-        f"{conversation.tasks}\n\n"
-        "Selecione da lista acima o número da tarefa que deseja concluir"
-    )
-    update.message.reply_text(text, reply_markup=ReplyKeyboardRemove(), parse_mode=ParseMode.HTML)
 
 
 # Main function in task concluding command
@@ -57,19 +35,19 @@ def conclude_task(update: Update, ctx: CallbackContext) -> int:
         arg = ctx.args[0]
         if arg in available_systems:
             # System selected
-            __load_system_info(update, selected_system=arg)
+            load_system_info(update, selected_system=arg)
             return SUBSYSTEM
 
         elif arg in list(electric_subsystems.keys()):
             # Electric subsystem selected
-            __load_system_info(update, selected_system="ele")
-            __load_subsystem_info(update, selected_subsystem=arg)
+            load_system_info(update, selected_system="ele")
+            load_subsystem_info(update, selected_subsystem=arg)
             return TASK
 
         elif arg in list(mechanics_subsystem.keys()):
             # Mechanics subsystem selected
-            __load_system_info(update, selected_system="mec")
-            __load_subsystem_info(update, selected_subsystem=arg)
+            load_system_info(update, selected_system="mec")
+            load_subsystem_info(update, selected_subsystem=arg)
             return TASK
 
     else:
@@ -81,13 +59,17 @@ def conclude_task(update: Update, ctx: CallbackContext) -> int:
 
 def subsystem_selector(update: Update, ctx: CallbackContext) -> int:
     selected_system = update.message.text
-    __load_system_info(update, selected_system)
+    if selected_system not in available_systems:
+        update.message.reply_text("Sistema não encontrado\nTente novamente", reply_markup=ReplyKeyboardRemove())
+        return SYSTEM
+
+    load_system_info(update, selected_system)
     return SUBSYSTEM
 
 
 def task_selector(update: Update, ctx: CallbackContext) -> int:
     selected_subsystem = update.message.text
-    __load_subsystem_info(update, selected_subsystem)
+    load_subsystem_info(update, selected_subsystem)
     return TASK
 
 

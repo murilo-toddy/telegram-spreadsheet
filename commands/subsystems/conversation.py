@@ -5,7 +5,6 @@ from spreadsheet import SystemSpreadsheet
 class Conversation:
     def __init__(self):
         # Related data
-        # TODO find a way to give default value to ss
         self.ss: SystemSpreadsheet
         self.dict: dict = {}
         self.index: int = -1

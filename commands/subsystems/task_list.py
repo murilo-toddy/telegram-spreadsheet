@@ -4,37 +4,6 @@ from ..general import send_message
 from spreadsheet import systems
 
 
-# TODO refactor file
-def get_subtasks(data: list, pos: int, counter: int) -> tuple[str, int, int]:
-    tasks = ""
-    i = pos
-    while i < len(data) and (not data[i][0] or i == pos):
-        if data[i][1] and data[i][2] != "Concluído":
-            tasks += f"{counter} - {data[i][1]}\n"
-            counter += 1
-        i += 1
-    return tasks, i, counter
-
-
-# TODO export method to generic file and refactor
-def get_task_lister_text(system: str, subsystem: str) -> str:
-    name = systems[system]["sub"][subsystem]["name"]
-    ss = systems[system]["ss"].sheet(subsystem)
-
-    data = ss.get_all_values()
-    string = f"<b>Subsistema: {name}</b>\n\n<u>Tarefas</u>\n"
-    counter = 1
-
-    for i in range(1, len(data)):
-        if data[i][0]:
-            tasks, pos, counter = get_subtasks(data, i, counter)
-            if tasks:
-                string += f"\n<i>{data[i][0]}</i>\n" + tasks
-            i = pos
-
-    return string
-
-
 def task_lister(update: Update, ctx: CallbackContext, args: list[str]) -> None:
     sub = args[0].strip().lower()
     if sub == "ele":
