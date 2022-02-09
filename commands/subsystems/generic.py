@@ -10,7 +10,7 @@ conversation_task = {}
 
 # Returns keyboard markup based on dictionary
 def __create_keyboard(elements: list) -> ReplyKeyboardMarkup:
-    return ReplyKeyboardMarkup([elements[i::2] for i in range(2)])
+    return ReplyKeyboardMarkup([elements[i::2] for i in range(2)], one_time_keyboard=True)
 
 
 # System and subsystem default keyboards

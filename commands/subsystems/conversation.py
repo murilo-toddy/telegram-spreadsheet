@@ -6,21 +6,21 @@ class Conversation:
     def __init__(self):
         # Related data
         self.ss: SystemSpreadsheet
-        self.dict: {}
-        self.index: int
-        self.row: []
+        self.dict: dict = {}
+        self.index: int = -1
+        self.row: list = []
 
         # Checks
-        self.new_project: bool
-        self.projects: str
-        self.tasks: str
+        self.new_project: bool = True
+        self.projects: str = ""
+        self.tasks: str = ""
 
         # Task information
-        self.system: str
-        self.subsystem: str
-        self.project: str
-        self.task: str
-        self.difficulty: str
-        self.duration: str
-        self.comments: str
-        self.documents: str
+        self.system: str = ""
+        self.subsystem: str = ""
+        self.project: str = ""
+        self.task: str = ""
+        self.difficulty: str = ""
+        self.duration: str = ""
+        self.comments: str = ""
+        self.documents: str = ""
