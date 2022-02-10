@@ -1,105 +1,73 @@
 from telegram import Update, ParseMode, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext
-import commands.general as general
+
 from spreadsheet import systems
+from .generic import get_task_lister_text
+from ..general import send_message, log_command
 
 
-def get_subtasks(data: list, pos: int, counter: int) -> bool:
-    tasks = ""
-    i = pos
-    while i < len(data) and (not data[i][0] or i == pos):
-        if data[i][1] and data[i][2] != "Concluido":
-            tasks += f"{counter} - {data[i][1]}\n"
-            counter += 1
-        i += 1
-    return tasks, i, counter
+# Shortens inline keyboard creation process
+def __create_keyboard(button_name: str, callback: str) -> InlineKeyboardButton:
+    return InlineKeyboardButton(button_name, callback_data=callback)
 
 
-def get_task_lister_text(system: str, subsystem: str) -> str:
-    if system == "ele":
-        name = systems["ele"]["sub"][subsystem]["name"]
-        ss = systems["ele"]["ss"].sheet(subsystem)
-    else:
-        name = systems["mec"]["sub"][subsystem]["name"]
-        ss = systems["mec"]["ss"].sheet(subsystem)
-
-    data = ss.get_all_values()
-    string = f"<b>Subsistema: {name}</b>\n\n<u>Tarefas</u>\n"
-    counter = 1
-
-    for i in range(1, len(data)):
-        if data[i][0]:
-            tasks, pos, counter = get_subtasks(data, i, counter)
-            if tasks:
-                string += f"\n<i>{data[i][0]}</i>\n" + tasks
-            i = pos
-
-    return string
+# Sends a message with an inline keyboard associated
+def __reply_keyboard(update: Update, ctx: CallbackContext, text: str, keyboard: InlineKeyboardMarkup) -> None:
+    ctx.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=keyboard, parse_mode=ParseMode.HTML)
 
 
-def task_lister(update: Update, ctx: CallbackContext, args: str) -> None:
+# System or subsystem selector
+def task_lister(update: Update, ctx: CallbackContext, args: list[str]) -> None:
+    log_command("list task")
     sub = args[0].strip().lower()
+
     if sub == "ele":
+        # Electric subsystems lister
         subsystems = [
-            [
-                InlineKeyboardButton("Baterias", callback_data="list bt"),
-                InlineKeyboardButton("Powertrain", callback_data="list pt"),
-            ],
-            [
-                InlineKeyboardButton("Hardware", callback_data="list hw"),
-                InlineKeyboardButton("Software", callback_data="list sw"),
-            ],
+            [__create_keyboard("Baterias", "list bt"), __create_keyboard("Powertrain", "list pt")],
+            [__create_keyboard("Hardware", "list hw"), __create_keyboard("Software", "list sw")],
         ]
-        ctx.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text="<b>Elétrica</b>\n\n"
+        reply_message_text = (
+            "<b>Elétrica</b>\n\n"
             "O sistema da elétrica possui os seguintes subsistemas:\n"
             "- Baterias\n- Powertrain\n- Hardware\n- Software\n\n"
-            "Escolha o subsistema que deseja listar as tarefas",
-            reply_markup=InlineKeyboardMarkup(subsystems),
-            parse_mode=ParseMode.HTML,
+            "Escolha o subsistema que deseja listar as tarefas"
         )
+        __reply_keyboard(update, ctx, reply_message_text, InlineKeyboardMarkup(subsystems))
 
     elif sub == "mec":
-        subsystems = [[InlineKeyboardButton("Chassi", callback_data="list ch")]]
-        ctx.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text="<b>Mecânica</b>\n\n"
+        # Mechanics subsystem lister
+        subsystems = [[__create_keyboard("Chassi", "list ch")]]
+        reply_message_text = (
+            "<b>Mecânica</b>\n\n"
             "O sistema da mecânica possui os seguintes subsistemas:\n"
             "- Chassi\n\n"
-            "Escolha o subsistema que deseja listar as tarefas",
-            reply_markup=InlineKeyboardMarkup(subsystems),
-            parse_mode=ParseMode.HTML,
+            "Escolha o subsistema que deseja listar as tarefas"
         )
+        __reply_keyboard(update, ctx, reply_message_text, InlineKeyboardMarkup(subsystems))
 
+    # Subsystem selected
     elif sub in systems["ele"]["sub"].keys():
-        general.send_message(update, ctx, get_task_lister_text("ele", sub))
+        send_message(update, ctx, get_task_lister_text("ele", sub))
 
     elif sub in systems["mec"]["sub"].keys():
-        general.send_message(update, ctx, get_task_lister_text("mec", sub))
+        send_message(update, ctx, get_task_lister_text("mec", sub))
 
     else:
-        general.send_message(update, ctx, "Sistema ou subsistema não encontrado")
+        send_message(update, ctx, "Sistema ou subsistema não encontrado")
 
 
+# Generic task lister message
 def subsystem_task_lister(update: Update, ctx: CallbackContext) -> None:
-    args = ctx.args
-    if not args:
-        systems = [
-            [
-                InlineKeyboardButton("Elétrica", callback_data="list ele"),
-                InlineKeyboardButton("Mecânica", callback_data="list mec"),
-            ]
-        ]
-        ctx.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text="Escolha um sistema ou subsistema\n\n<code>/list &lt;subsistema&gt;</code>",
-            reply_markup=InlineKeyboardMarkup(systems),
-            parse_mode=ParseMode.HTML,
-        )
-
-    else:
+    # Arguments passed
+    if args := ctx.args:
         task_lister(update, ctx, args)
+
+    # System lister
+    else:
+        reply_message_text = "Escolha um sistema ou subsistema\n\n<code>/list &lt;subsistema&gt;</code>"
+        available_systems = [[__create_keyboard("Elétrica", "list ele"), __create_keyboard("Mecânica", "list mec")]]
+        __reply_keyboard(update, ctx, reply_message_text, InlineKeyboardMarkup(available_systems))
 
 
 def query_handler(update: Update, ctx: CallbackContext) -> None:

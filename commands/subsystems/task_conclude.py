@@ -1,5 +1,5 @@
-from commands.subsystems.generic import get_default_system_message
-from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove, ParseMode
+from gspread import Worksheet
+from telegram import Update
 from telegram.ext import (
     MessageHandler,
     Filters,
@@ -7,133 +7,150 @@ from telegram.ext import (
     CallbackContext,
     ConversationHandler,
 )
-from spreadsheet import systems
-from commands.subsystems.generic import timeout, cancel
-from commands.subsystems.task_list import get_task_lister_text
-from gspread import Worksheet
+
+from utils import available_systems, electric_subsystems, mechanics_subsystem
+from .generic import (
+    timeout,
+    cancel,
+    get_default_system_message,
+    get_conversation,
+    load_conversation,
+    keyboards,
+    load_system_info,
+    load_subsystem_info
+)
+from ..general import log_command, reply_text
 
 # States of conversation
 SYSTEM, SUBSYSTEM, TASK, DIFFICULTY, DURATION, COMMENTS = range(6)
 
-# Conclude task info
-end_task = {
-    "ss": None,
-    "dict": None,
-    "system": "",
-    "subsystem": "",
-    "tasks": "",
-    "row": "",
-    "index": "",
-    "difficulty": "",
-    "comments": "",
-}
 
-
+# Main function in task concluding command
 def conclude_task(update: Update, ctx: CallbackContext) -> int:
-    if not ctx.args:
-        system = [["ele", "mec"]]
-        update.message.reply_text(
-            get_default_system_message("Concluir tarefa", ""),
-            parse_mode=ParseMode.HTML,
-            reply_markup=ReplyKeyboardMarkup(system),
-        )
+    # Initiates new conversation
+    load_conversation(update)
+    log_command("conclude task")
+
+    if ctx.args:
+        arg = ctx.args[0].strip().lower()
+        if arg in available_systems:
+            # System selected
+            load_system_info(update, selected_system=arg)
+            return SUBSYSTEM
+
+        elif arg in electric_subsystems.keys():
+            # Electric subsystem selected
+            load_system_info(update, selected_system="ele")
+            load_subsystem_info(update, selected_subsystem=arg)
+            return TASK
+
+        elif arg in mechanics_subsystem.keys():
+            # Mechanics subsystem selected
+            load_system_info(update, selected_system="mec")
+            load_subsystem_info(update, selected_subsystem=arg)
+            return TASK
+
+    # No/invalid arguments passed, prompts for system
+    task_name, desc = "Concluir tarefa", "Modifica o status da tarefa para Concluído na planilha do sistema"
+    reply_text(update, get_default_system_message(task_name, desc), keyboards["system"])
+    return SYSTEM
+
+
+def subsystem_selector(update: Update, ctx: CallbackContext) -> int:
+    selected_system = update.message.text
+    if selected_system not in available_systems:
+        reply_text(update, "Sistema não encontrado\nTente novamente")
         return SYSTEM
 
-
-def system(update: Update, ctx: CallbackContext) -> int:
-    system = update.message.text
-    if system == "ele":
-        subsystem_selector = [["bt", "pt"], ["hw", "sw"]]
-    elif system == "mec":
-        subsystem_selector = [["ch"]]
-    else:
-        update.message.reply_text("Sistema não encontrado", reply_markup=ReplyKeyboardRemove())
-        return ConversationHandler.END
-
-    global end_task
-    end_task["system"] = system
-    end_task["dict"] = systems["ele"]["sub"] if system == "ele" else systems["mec"]["sub"]
-    end_task["ss"] = systems["ele"]["ss"] if system == "ele" else systems["ele"]["ss"]
-
-    update.message.reply_text(
-        "Informe o subsistema",
-        reply_markup=ReplyKeyboardMarkup(subsystem_selector, one_time_keyboard=True),
-        parse_mode=ParseMode.HTML,
-    )
+    load_system_info(update, selected_system)
     return SUBSYSTEM
 
 
-def subsystem(update: Update, ctx: CallbackContext) -> int:
-    subsystem = update.message.text
-    global end_task
-    end_task["subsystem"] = subsystem
-    end_task["tasks"] = get_task_lister_text(end_task["system"], end_task["subsystem"])
-    reply_text = (
-        f"<b>Subsistema: {end_task['dict'][subsystem]['name']}</b>\n\n"
-        f"{end_task['tasks']}\n\n"
-        "Selecione da lista acima o número da tarefa que deseja concluir"
-    )
-    update.message.reply_text(reply_text, reply_markup=ReplyKeyboardRemove(), parse_mode=ParseMode.HTML)
+def task_selector(update: Update, ctx: CallbackContext) -> int:
+    system = get_conversation(update).system
+    selected_subsystem = update.message.text
+    available_subsystems = electric_subsystems.keys() if system == "ele" else mechanics_subsystem.keys()
+    if selected_subsystem not in available_subsystems:
+        reply_text(update, "Subsistema não encontrado\nTente novamente")
+        return SUBSYSTEM
+
+    load_subsystem_info(update, selected_subsystem)
     return TASK
 
 
-def task(update: Update, ctx: CallbackContext):
+def difficulty_selector(update: Update, ctx: CallbackContext) -> int:
+    conversation = get_conversation(update)
     try:
-        global end_task
-        task = int(update.message.text)
-        task_row = [row for row in end_task["tasks"].split("\n") if row.startswith(f"{task}")][0]
-        task_name = task_row.split(" - ")[1]
-    except:
-        update.message.reply_text("Forneça um número válido")
+        task_number = int(update.message.text)
+        # Gets text containing all tasks and finds specified task by number
+        task_row = [row for row in conversation.tasks.split("\n") if row.startswith(f"{task_number}")][0]
+        # Removes number in front
+        task_name = task_row.partition(" - ")[2]
+        if task_name == "":
+            # Task not found in tasks list
+            reply_text(update, "O número fornecido não está relacionado com uma tarefa válida\nTente novamente")
+            return TASK
+
+    except ValueError:
+        # Task not found in tasks list
+        reply_text(update, "O número fornecido não está relacionado com uma tarefa válida\nTente novamente")
         return TASK
 
-    ss: Worksheet = end_task["ss"].sheet(end_task["subsystem"])
+    ss: Worksheet = conversation.ss.sheet(conversation.subsystem)
     data = ss.get_all_values()
+    # Finds corresponding row in spreadsheet
     for index, row in enumerate(data):
         if row[1] == task_name:
             break
 
-    end_task["row"] = row
-    end_task["index"] = index
-    update.message.reply_text(
-        f"A dificuldade esperada para esta tarefa era de {row[5]}\nForneça a dificuldade real encontrada (0-10)"
-    )
+    conversation.row = row
+    conversation.index = index
+    text_message = f"A dificuldade esperada para {row[1]} era de {row[5]}\nForneça a dificuldade real encontrada (0-10)"
+    reply_text(update, text_message)
 
     return DIFFICULTY
 
 
-def difficulty(update: Update, ctx: CallbackContext):
-    global end_task
-    end_task["difficulty"] = update.message.text
-    update.message.reply_text("Descreva brevemente o porquê desta dificuldade")
+def read_comment(update: Update, ctx: CallbackContext) -> int:
+    conversation = get_conversation(update)
+    try:
+        conversation.difficulty = float(update.message.text)
+        if conversation.difficulty > 10 or conversation.difficulty < 0:
+            # Value out of range
+            reply_text(update, "O valor fornecido é inválido\nTente novamente")
+            return DIFFICULTY
+
+    except ValueError:
+        # Argument is NAN
+        reply_text(update, "O valor fornecido é inválido\nTente novamente")
+        return DIFFICULTY
+
+    reply_text(update, "Descreva brevemente o porquê desta dificuldade")
     return COMMENTS
 
 
-def comments(update: Update, ctx: CallbackContext):
-    global end_task
-    end_task["comments"] = update.message.text
+def info_confirmation(update: Update, ctx: CallbackContext) -> int:
+    conversation = get_conversation(update)
+    conversation.comments = update.message.text
 
-    index = end_task["index"] + 1
-    ss: Worksheet = end_task["ss"].sheet(end_task["subsystem"])
+    # Updates information in google sheets
+    conversation.ss.conclude_task(conversation)
 
-    ss.update_acell(f"C{index}", "Concluído")
-    ss.update_acell(f"H{index}", end_task["difficulty"])
-    ss.update_acell(f"I{index}", f"{end_task['row'][8]}\n{end_task['comments']}")
-
-    update.message.reply_text(f"Tarefa {end_task['row'][1]} concluída com sucesso!")
+    update.message.reply_text(f"Tarefa {conversation.row[1]} concluída com sucesso!")
     return ConversationHandler.END
 
 
+# Conversation handler to update between states
 conclude_handler = ConversationHandler(
     entry_points=[CommandHandler("end", conclude_task)],
     states={
-        SYSTEM: [MessageHandler(Filters.text & ~(Filters.command), system)],
-        SUBSYSTEM: [MessageHandler(Filters.text & ~(Filters.command), subsystem)],
-        TASK: [MessageHandler(Filters.text & ~(Filters.command), task)],
-        DIFFICULTY: [MessageHandler(Filters.text & ~(Filters.command), difficulty)],
-        COMMENTS: [MessageHandler(Filters.text & ~(Filters.command), comments)],
+        SYSTEM: [MessageHandler(Filters.text & ~Filters.command, subsystem_selector)],
+        SUBSYSTEM: [MessageHandler(Filters.text & ~Filters.command, task_selector)],
+        TASK: [MessageHandler(Filters.text & ~Filters.command, difficulty_selector)],
+        DIFFICULTY: [MessageHandler(Filters.text & ~Filters.command, read_comment)],
+        COMMENTS: [MessageHandler(Filters.text & ~Filters.command, info_confirmation)],
         ConversationHandler.TIMEOUT: [MessageHandler(Filters.text | Filters.command, timeout)],
     },
     fallbacks=[CommandHandler("cancel", cancel)],
-    conversation_timeout=30,
+    conversation_timeout=40,
 )

@@ -1,5 +1,4 @@
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove, ParseMode
-from gspread import Worksheet
 from telegram.ext import (
     MessageHandler,
     Filters,
@@ -7,104 +6,104 @@ from telegram.ext import (
     CallbackContext,
     ConversationHandler,
 )
-from commands.subsystems.generic import get_default_system_message, timeout, cancel
-from commands.subsystems.task_list import get_task_lister_text
+
 from spreadsheet import systems
-from commands.general import log_command
+from .generic import (
+    get_default_system_message,
+    timeout,
+    cancel,
+    load_conversation,
+    get_conversation,
+    get_task_lister_text,
+)
+from ..general import log_command, reply_text
+from .generic import load_system_info, load_subsystem_info, keyboards
+from utils import available_systems, electric_subsystems, mechanics_subsystem
 
 # States of conversation
 SYSTEM, SUBSYSTEM, TASK = range(3)
-
-# Dictionary containing all needed information about the task
-task_start = {"ss": None, "dict": None, "system": "", "subsystem": "", "tasks": ""}
 
 
 # Home function
 # TODO Enable subsystem arguments for faster starting
 def start_task(update: Update, ctx: CallbackContext) -> int:
-    log_command("start")
-    if not ctx.args:
-        system = [["ele", "mec"]]
-        update.message.reply_text(
-            get_default_system_message("Iniciar tarefa", ""),
-            parse_mode=ParseMode.HTML,
-            reply_markup=ReplyKeyboardMarkup(system),
-        )
+    # Initiates new conversation
+    load_conversation(update)
+    log_command("start task")
+
+    if ctx.args:
+        arg = ctx.args[0].strip().lower()
+        if arg in available_systems:
+            # System selected
+            load_system_info(update, selected_system=arg)
+            return SUBSYSTEM
+
+        elif arg in electric_subsystems.keys():
+            # Electric subsystem selected
+            load_system_info(update, selected_system="ele")
+            load_subsystem_info(update, selected_subsystem=arg)
+            return TASK
+
+        elif arg in mechanics_subsystem.keys():
+            # Mechanics subsystem selected
+            load_system_info(update, selected_system="mec")
+            load_subsystem_info(update, selected_subsystem=arg)
+            return TASK
+
+    # No/invalid arguments passed, prompts for system
+    task_name, desc = "Iniciar tarefa", "Modifica o status da tarefa para Fazendo na planilha do sistema"
+    reply_text(update, get_default_system_message(task_name, desc), keyboards["system"])
+    return SYSTEM
+
+
+def subsystem_selector(update: Update, ctx: CallbackContext) -> int:
+    selected_system = update.message.text
+    if selected_system not in available_systems:
+        reply_text(update, "Sistema não encontrado\nTente novamente")
         return SYSTEM
 
-
-# TODO Find a way to extract common conversation methods
-# System selecting method
-def system(update: Update, ctx: CallbackContext) -> int:
-    system = update.message.text
-    if system == "ele":
-        subsystem_selector = [["bt", "pt"], ["hw", "sw"]]
-    elif system == "mec":
-        subsystem_selector = [["ch"]]
-    else:
-        update.message.reply_text("Sistema não encontrado", reply_markup=ReplyKeyboardRemove())
-        return ConversationHandler.END
-
-    # Saves pertinent information in global variable
-    global task_start
-    task_start["system"] = system
-    task_start["dict"] = systems["ele"]["sub"] if system == "ele" else systems["mec"]["sub"]
-    task_start["ss"] = systems["ele"]["ss"] if system == "ele" else systems["mec"]["ss"]
-
-    update.message.reply_text(
-        "Informe o subsistema",
-        reply_markup=ReplyKeyboardMarkup(subsystem_selector, one_time_keyboard=True),
-        parse_mode=ParseMode.HTML,
-    )
+    load_system_info(update, selected_system)
     return SUBSYSTEM
 
 
-# Subsystem selecting method
-def subsystem(update: Update, ctx: CallbackContext) -> int:
-    subsystem = update.message.text
-    global task_start
-    task_start["subsystem"] = subsystem
-    task_start["tasks"] = get_task_lister_text(task_start["system"], task_start["subsystem"])
-    reply_text = (
-        f"<b>Subsistema: {task_start['dict'][subsystem]['name']}</b>\n\n"
-        f"{task_start['tasks']}\n\n"
-        "Selecione da lista acima o número da tarefa que deseja iniciar"
-    )
-    update.message.reply_text(reply_text, reply_markup=ReplyKeyboardRemove(), parse_mode=ParseMode.HTML)
+def task_selector(update: Update, ctx: CallbackContext) -> int:
+    selected_system = get_conversation(update).system
+    selected_subsystem = update.message.text
+    available_subsystems = electric_subsystems.keys() if selected_system == "ele" else mechanics_subsystem.keys()
+    if selected_subsystem not in available_subsystems:
+        reply_text(update, "Subsistema não encontrado\nTente novamente")
+        return SUBSYSTEM
+
+    load_subsystem_info(update, selected_subsystem)
     return TASK
 
 
-def task(update: Update, ctx: CallbackContext):
+def task_starter(update: Update, ctx: CallbackContext) -> int:
     try:
         # Verifies task is valid
-        global task_start
+        conversation = get_conversation(update)
         task = int(update.message.text)
-        task_row = [row for row in task_start["tasks"].split("\n") if row.startswith(f"{task}")][0]
+        task_row = [row for row in conversation.tasks.split("\n") if row.startswith(f"{task}")][0]
         task_name = task_row.split(" - ")[1]
+        conversation.task = task_name
     except:
         # Task is invalid
         update.message.reply_text("Forneça um número válido")
         return TASK
 
     # Finds task index in spreadsheet
-    ss: Worksheet = task_start["ss"].sheet(task_start["subsystem"])
-    data = ss.get_all_values()
-    for index, row in enumerate(data):
-        if row[1] == task_name:
-            break
-
-    # Updates status and returns
-    ss.update_acell(f"C{index+1}", "Fazendo")
+    conversation.ss.start_task(conversation)
     update.message.reply_text(f"Tarefa {task_name} iniciada com sucesso!")
     return ConversationHandler.END
 
 
+# Conversation handler to update between states
 start_handler = ConversationHandler(
     entry_points=[CommandHandler("start", start_task)],
     states={
-        SYSTEM: [MessageHandler(Filters.text & ~(Filters.command), system)],
-        SUBSYSTEM: [MessageHandler(Filters.text & ~(Filters.command), subsystem)],
-        TASK: [MessageHandler(Filters.text & ~(Filters.command), task)],
+        SYSTEM: [MessageHandler(Filters.text & ~Filters.command, subsystem_selector)],
+        SUBSYSTEM: [MessageHandler(Filters.text & ~Filters.command, task_selector)],
+        TASK: [MessageHandler(Filters.text & ~Filters.command, task_starter)],
         ConversationHandler.TIMEOUT: [MessageHandler(Filters.text | Filters.command, timeout)],
     },
     fallbacks=[CommandHandler("cancel", cancel)],

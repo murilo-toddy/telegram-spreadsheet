@@ -2,3 +2,5 @@ client_secret.json
 .env
 __pycache__
 ideias.txt
+.idea
+venv
