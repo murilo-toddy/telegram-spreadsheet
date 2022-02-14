@@ -1,7 +1,7 @@
 from telegram.ext import Updater
 
+from config import *
 import commands.handler as handler
-from config import TELEGRAM_TOKEN
 
 # Creates bot instance
 bot = Updater(TELEGRAM_TOKEN)
