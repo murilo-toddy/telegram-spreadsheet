@@ -30,7 +30,6 @@ class Spreadsheet:
     ss - gspread.Spreadsheet: Google spreadsheet
     sheets - {str: gspread.Worksheet}: Dictionary containing
     """
-
     def __init__(self, sheet_id: str, scope: list, auth_file: str, debug: bool):
         self.__debug = debug
 
