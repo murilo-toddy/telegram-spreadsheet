@@ -14,6 +14,7 @@ SHEET_SCOPE = [
 ]
 
 
+# TODO update class to inherit from gspread
 class Spreadsheet:
     """
     Class used to communicate with Google spreadsheets

@@ -53,4 +53,5 @@ google_credentials = {
 }
 
 with open("./google_client.json", "w") as f:
+    print("\n  [!] Google config file created")
     dump(google_credentials, f, indent=4)
