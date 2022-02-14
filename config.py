@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from json import dump
+from json import dump, dumps
 
 # File responsible for loading sensitive variables
 if os.path.isfile("./.env"):
@@ -30,7 +30,7 @@ else:
     GOOGLE_CREDS_TYPE = os.environ["GOOGLE_CREDS_TYPE"]
     GOOGLE_CREDS_PROJECT_ID = os.environ["GOOGLE_CREDS_PROJECT_ID"]
     GOOGLE_CREDS_PRIVATE_KEY_ID = os.environ["GOOGLE_CREDS_PRIVATE_KEY_ID"]
-    GOOGLE_CREDS_PRIVATE_KEY = os.environ["GOOGLE_CREDS_PRIVATE_KEY"]
+    GOOGLE_CREDS_PRIVATE_KEY = os.environ["GOOGLE_CREDS_PRIVATE_KEY"].replace("\\\\", '\\')
     GOOGLE_CREDS_EMAIL = os.environ["GOOGLE_CREDS_EMAIL"]
     GOOGLE_CREDS_CLIENT_ID = os.environ["GOOGLE_CREDS_CLIENT_ID"]
     GOOGLE_CREDS_AUTH_URI = os.environ["GOOGLE_CREDS_AUTH_URI"]
@@ -55,3 +55,4 @@ google_credentials = {
 with open("./google_client.json", "w") as f:
     print("\n  [!] Google config file created")
     dump(google_credentials, f, indent=4)
+    print(dumps(google_credentials))
