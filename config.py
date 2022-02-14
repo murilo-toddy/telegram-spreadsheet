@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from json import dump, dumps
+from json import dump
 
 # File responsible for loading sensitive variables
 if os.path.isfile("./.env"):
@@ -39,6 +39,7 @@ else:
     GOOGLE_CREDS_CLIENT = os.environ["GOOGLE_CREDS_CLIENT"]
 
 
+# TODO Update to only create file if it doesn't exist
 google_credentials = {
     "type": GOOGLE_CREDS_TYPE,
     "project_id": GOOGLE_CREDS_PROJECT_ID,
@@ -53,6 +54,5 @@ google_credentials = {
 }
 
 with open("./google_client.json", "w") as f:
-    print("\n  [!] Google config file created")
     dump(google_credentials, f, indent=4)
-    print(dumps(google_credentials))
+    print("\n  [!] Google config file created")
