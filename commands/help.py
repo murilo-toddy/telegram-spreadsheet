@@ -38,7 +38,7 @@ available_commands = {
         "Por outro lado, pode-se utilizar <code>/add</code> sem argumentos para receber "
         "uma lista com os sistemas e subsistemas disponíveis."
     ),
-    "start": (
+    "init": (
         "Muda o status de uma tarefa da planilha de atividades do sistema para Fazendo\n\n"
         "Ao selecionar o subsistema, o bot responderá com a lista de tarefas ativas. Ao selecionar "
         "a desejada, esta terá seu status atualizado automaticamente na planilha.\n\n"

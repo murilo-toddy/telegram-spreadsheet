@@ -97,9 +97,7 @@ def subsystem(update: Update, ctx: CallbackContext) -> int:
 
 def project(update: Update, ctx: CallbackContext) -> int:
     project = update.message.text
-
     conversation = get_conversation(update)
-
     try:
         project_number = int(project)
         conversation.new_project = False

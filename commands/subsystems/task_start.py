@@ -99,7 +99,7 @@ def task_starter(update: Update, ctx: CallbackContext) -> int:
 
 # Conversation handler to update between states
 start_handler = ConversationHandler(
-    entry_points=[CommandHandler("start", start_task)],
+    entry_points=[CommandHandler("init", start_task)],
     states={
         SYSTEM: [MessageHandler(Filters.text & ~Filters.command, subsystem_selector)],
         SUBSYSTEM: [MessageHandler(Filters.text & ~Filters.command, task_selector)],

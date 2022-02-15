@@ -6,7 +6,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from config import COMMANDS_SHEET_ID, ELE_SHEET_ID, MEC_SHEET_ID
 from utils import electric_subsystems, mechanics_subsystem
 
-SHEET_AUTH_FILE = "client_secret.json"
+SHEET_AUTH_FILE = "google_client.json"
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1kHx2-Q3H_m3pqm7YHDmMD8SzOJMxPIIw5cwB7vVlMi0/edit#gid=1546038790"
 SHEET_SCOPE = [
     "https://www.googleapis.com/auth/drive",
@@ -14,6 +14,7 @@ SHEET_SCOPE = [
 ]
 
 
+# TODO update class to inherit from gspread
 class Spreadsheet:
     """
     Class used to communicate with Google spreadsheets
@@ -30,7 +31,6 @@ class Spreadsheet:
     ss - gspread.Spreadsheet: Google spreadsheet
     sheets - {str: gspread.Worksheet}: Dictionary containing
     """
-
     def __init__(self, sheet_id: str, scope: list, auth_file: str, debug: bool):
         self.__debug = debug
 

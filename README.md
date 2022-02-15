@@ -92,7 +92,7 @@ Para membros da equipe, a configuração utilizada atualmente pode ser encontrad
 ## Dependências
 
 O `bot` foi construído utilizando `Python 3.9.7` e conta com as dependências listadas no arquivo
-`dependencies.txt`. Para instalá-las, basta executar o comando `$ pip install requirements.txt`.
+`requirements.txt`. Para instalá-las, basta executar o comando `$ pip install requirements.txt`.
 
 ## Execução
 
