@@ -27,4 +27,5 @@ def register_commands(dsp) -> None:
     for cmd in commands.sheet("cmd").get_all_values()[1:]:
         dsp.add_handler(CommandHandler(command=cmd[0], callback=general.spreadsheet_return_text))
 
+    general.create_auto_refresh()
     print("\n  [!] Commands loaded")
