@@ -1,15 +1,16 @@
 from telegram import Update
 from telegram.ext import CallbackContext
 
-from commands.general import send_message
+from commands.general import log_command, send_message
 
 
 # TODO change dictrionary for dataclass
 # Helper function to create dictionary with specific keys
-def _create_command_dict(category: str, description: str):
+def _create_command_dict(category: str, short_description: str, full_description: str):
     return {
         "category": category,
-        "description": description,
+        "short_description": short_description,
+        "full_description": full_description,
     }
 
 
@@ -17,15 +18,17 @@ def _create_command_dict(category: str, description: str):
 available_commands = {
     "help": _create_command_dict(
         category="Geral",
-        description=(
-            "Lista informações a respeito dos comandos disponíveis, divididos por categoria.<br><br>"
+        short_description="Fornece informação sobre comandos disponíveis",
+        full_description=(
+            "Lista informações a respeito dos comandos disponíveis, divididos por categoria.\n\n"
             "Informações a respeito de um comando específico podem ser obtidas utilizando "
             "<code>/help &lt;comando&gt;</code>."
         ),
     ),
     "planilha": _create_command_dict(
         category="Geral",
-        description=(
+        short_description="Retorna a planilha de comandos",
+        full_description=(
             "Envia o link da planilha de comandos do Tupão\n"
             "Para cadastrar um novo comando, basta inserir este e a resposta "
             "de texto esperada na ultima linha.\n"
@@ -36,7 +39,8 @@ available_commands = {
     ),
     "list": _create_command_dict(
         category="Subsistemas",
-        description=(
+        short_description="Lista as tarefas de um subsistema",
+        full_description=(
             "Lista todas as tarefas não concluídas de um subsistema, com base na planilha "
             "de atividades deste.\n\n"
             "As tarefas são listadas separadas por projeto\n\n"
@@ -49,7 +53,8 @@ available_commands = {
     ),
     "add": _create_command_dict(
         category="Subsistemas",
-        description=(
+        short_description="Adiciona uma nova tarefa",
+        full_description=(
             "Adiciona uma nova tarefa na planilha de atividades do sistema\n\n"
             "Ao selecionar o subsistema, o bot responderá com a lista de projetos ativos.\n"
             "É possível então selecionar um dos projetos já existentes através de seu número ou "
@@ -66,7 +71,8 @@ available_commands = {
     ),
     "init": _create_command_dict(
         category="Subsistemas",
-        description=(
+        short_description="Inicia uma tarefa",
+        full_description=(
             "Muda o status de uma tarefa da planilha de atividades do sistema para Fazendo\n\n"
             "Ao selecionar o subsistema, o bot responderá com a lista de tarefas ativas. Ao selecionar "
             "a desejada, esta terá seu status atualizado automaticamente na planilha.\n\n"
@@ -79,7 +85,8 @@ available_commands = {
     ),
     "end": _create_command_dict(
         category="Subsistemas",
-        description=(
+        short_description="Conclui uma tarefa",
+        full_description=(
             "Muda o status de uma tarefa da planilha de atividades do sistema para Concluído\n\n"
             "Ao selecionar o subsistema, o bot responderá com a lista de tarefas ativas. Ao selecionar "
             "a desejada, serão realizadas algumas perguntas a respeito do desenvolvimento desta, que "
@@ -97,16 +104,17 @@ available_commands = {
 # TODO show commands separated by category
 # Returns description with all available commands
 def get_default_description() -> str:
-    return (
-        "<b>Comandos disponíveis</b>\n"
-        f"<code>{'</code>, <code>'.join(available_commands.keys())}</code>.\n\n"
-        "Utilize <code>/help &lt;comando&gt;</code> para obter ajuda para um comando específico"
-    )
+    string = "<b>Comandos disponíveis</b>\n\n"
+    for cmd, info in available_commands.items():
+        string += f"/{cmd} - {info['short_description']}\n"
+
+    string += "\nUtilize <code>/help &lt;comando&gt;</code> para obter ajuda para um comando específico"
+    return string
 
 
 # Returns help for specified command as stated in dictionary
 def get_personalized_description(command: str) -> str:
-    return f"<b>Comando {command}</b>\n\n<u>Descrição</u>\n{available_commands[command]['description']}"
+    return f"<b>Comando {command}</b>\n\n<u>Descrição</u>\n{available_commands[command]['full_description']}"
 
 
 def help_command(update: Update, ctx: CallbackContext) -> None:
@@ -115,6 +123,7 @@ def help_command(update: Update, ctx: CallbackContext) -> None:
     Returns a list of available commands if no argument is specified
     Returns help for specific command otherwise
     """
+    log_command("help")
     if ctx.args and ctx.args[0] in available_commands.keys():
         send_message(update, ctx, get_personalized_description(ctx.args[0]))
 
