@@ -33,12 +33,12 @@
     </a>
 </p>
 
-`Tupão` é um `Telegram bot` criado com o objetivo de fornecer assistência aos membros da extracurricular em
+`Tupão` é um `Telegram bot` criado para fornecer assistência aos membros da extracurricular em
 um cenário presencial, onde se faz necessário realizar atualizações em planilhas e serviços do `Google`, mesmo
 sem possuir acesso direto a um computador.
 
 O objetivo principal do `Tupão` é fornecer assistência durante o período de manufatura da equipe `EESC USP Tupã`.
- Para tal, o bot possui as seguintes funcionalidades básicas:
+ Para tal, o `bot` possui as seguintes funcionalidades básicas:
 
 - `help`: Comando de ajuda, que fornece informação acerca de todos os comandos cadastrados
 - `add`: Permite que sejam cadastradas novas tarefas na planilha de mapeamento da equipe

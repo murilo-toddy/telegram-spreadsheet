@@ -3,9 +3,20 @@ from telegram.ext import CallbackContext
 
 from commands.general import send_message
 
+
+def _create_command_dict(style: str, description: str):
+    return {
+        "style": style,
+        "description": description,
+    }
+
+
 # Dictionary containing available commands
 available_commands = {
-    "help": ("Lista informações a respeito dos comandos disponíveis"),
+    "help": _create_command_dict(
+        style="Geral",
+        description="Lista informações a respeito dos comandos disponíveis"
+    ),
     "planilha": (
         "Envia o link da planilha de comandos do Tupão\n"
         "Para cadastrar um novo comando, basta inserir este e a resposta "
