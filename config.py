@@ -14,7 +14,7 @@ if os.path.isfile("./.env"):
 
 else:
     TELEGRAM_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
-    DATABASE_URL = os.environ["DATABSE_URL"]
+    DATABASE_URL = os.environ["DATABASE_URL"]
     COMMANDS_SHEET_ID = os.environ["COMMANDS_SHEET_ID"]
     ELE_SHEET_ID = os.environ["ELE_SHEET_ID"]
     MEC_SHEET_ID = os.environ["MEC_SHEET_ID"]
