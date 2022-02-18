@@ -1,7 +1,7 @@
 <h1 align="center" style="color:white; background-color:black">Tupão</h1>
-<h2 align="center" style="color:white; background-color:black">Tupã Telegram-Spreadsheet Bot</h2>
+<h2 align="center" style="color:white; background-color:black">Tupã's Telegram Bot</h2>
 
-<h4 align="center">A bot to interface google apps via telegram</h4>
+<h4 align="center">A bot to handle tasks and provide automation via telegram</h4>
 
 <p align="center">
     <a href="https://tupa.eesc.usp.br//">
@@ -33,12 +33,12 @@
     </a>
 </p>
 
-`Tupão` é um `Telegram bot` criado com o objetivo de fornecer assistência aos membros da extracurricular em
+`Tupão` é um `Telegram bot` criado para fornecer assistência aos membros da extracurricular em
 um cenário presencial, onde se faz necessário realizar atualizações em planilhas e serviços do `Google`, mesmo
 sem possuir acesso direto a um computador.
 
 O objetivo principal do `Tupão` é fornecer assistência durante o período de manufatura da equipe `EESC USP Tupã`.
- Para tal, o bot possui as seguintes funcionalidades básicas:
+ Para tal, o `bot` possui as seguintes funcionalidades básicas:
 
 - `help`: Comando de ajuda, que fornece informação acerca de todos os comandos cadastrados
 - `add`: Permite que sejam cadastradas novas tarefas na planilha de mapeamento da equipe
@@ -86,13 +86,32 @@ As informações devem seguir o seguinte formato:
 }
 ```
 
+As informações em questão podem ser fornecidas em um arquivo nomeado `google_client.json` ou podem ser fornecidas no próprio arquivo `.env`. A nomenclatura das variáveis neste segundo caso deve ser:
+
+```
+GOOGLE_CREDS_TYPE =
+GOOGLE_CREDS_PROJECT_ID =
+GOOGLE_CREDS_PRIVATE_KEY_ID =
+GOOGLE_CREDS_PRIVATE_KEY =
+GOOGLE_CREDS_EMAIL =
+GOOGLE_CREDS_CLIENT_ID =
+GOOGLE_CREDS_AUTH_URI =
+GOOGLE_CREDS_TOKEN_URI =
+GOOGLE_CREDS_AUTH_PROVIDER =
+GOOGLE_CREDS_CLIENT =
+```
+
 Para membros da equipe, a configuração utilizada atualmente pode ser encontrada
 [neste link](https://drive.google.com/drive/folders/1xBYfFu1UMstL7kg57yETpns6aYJsKRio?ths=true).
 
 ## Dependências
 
 O `bot` foi construído utilizando `Python 3.9.7` e conta com as dependências listadas no arquivo
-`requirements.txt`. Para instalá-las, basta executar o comando `$ pip install requirements.txt`.
+`requirements.txt`. Para instalá-las, basta executar o comando abaixo.
+
+```bash
+$ pip install -r requirements.txt
+```
 
 ## Execução
 

@@ -1,4 +1,4 @@
-from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove, ParseMode
+from telegram import Update
 from telegram.ext import (
     MessageHandler,
     Filters,
@@ -7,14 +7,12 @@ from telegram.ext import (
     ConversationHandler,
 )
 
-from spreadsheet import systems
 from .generic import (
     get_default_system_message,
     timeout,
     cancel,
     load_conversation,
     get_conversation,
-    get_task_lister_text,
 )
 from ..general import log_command, reply_text
 from .generic import load_system_info, load_subsystem_info, keyboards

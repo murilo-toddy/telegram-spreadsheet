@@ -6,7 +6,8 @@ import commands.subsystems.task_conclude as task_conclude
 import commands.subsystems.task_list as task_list
 import commands.subsystems.task_register as task_register
 import commands.subsystems.task_start as task_start
-from spreadsheet import commands
+from google.spreadsheet import commands
+from db.connection import Connection
 
 
 # Registers command and callback handlers into bot
@@ -27,4 +28,6 @@ def register_commands(dsp) -> None:
     for cmd in commands.sheet("cmd").get_all_values()[1:]:
         dsp.add_handler(CommandHandler(command=cmd[0], callback=general.spreadsheet_return_text))
 
+    con = Connection()
+    general.create_auto_refresh()
     print("\n  [!] Commands loaded")

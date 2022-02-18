@@ -1,5 +1,8 @@
-gspread==5.1.1
-oauth2client==4.1.3
-python-dotenv==0.19.2
+gspread
+oauth2client
+python-dotenv
 python-telegram-bot
-Unidecode==1.3.2
+Unidecode
+telegram
+psycopg2
+psycopg2-binary
