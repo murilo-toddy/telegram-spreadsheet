@@ -1,4 +1,6 @@
 import os
+
+import pymongo
 from dotenv import load_dotenv
 from json import dump
 
@@ -6,12 +8,14 @@ from json import dump
 if os.path.isfile("./.env"):
     load_dotenv()
     TELEGRAM_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+    DATABASE_URL = os.getenv("DATABASE_URL")
     COMMANDS_SHEET_ID = os.getenv("COMMANDS_SHEET_ID")
     ELE_SHEET_ID = os.getenv("ELE_SHEET_ID")
     MEC_SHEET_ID = os.getenv("MEC_SHEET_ID")
 
 else:
     TELEGRAM_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
+    DATABASE_URL = os.getenv("DATABSE_URL")
     COMMANDS_SHEET_ID = os.environ["COMMANDS_SHEET_ID"]
     ELE_SHEET_ID = os.environ["ELE_SHEET_ID"]
     MEC_SHEET_ID = os.environ["MEC_SHEET_ID"]
