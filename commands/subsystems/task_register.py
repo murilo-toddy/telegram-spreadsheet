@@ -13,7 +13,7 @@ from telegram.ext import (
 )
 from unidecode import unidecode
 
-from spreadsheet import systems
+from google.spreadsheet import systems
 from .generic import get_default_system_message, timeout, cancel, load_conversation, get_conversation
 from ..general import log_command
 

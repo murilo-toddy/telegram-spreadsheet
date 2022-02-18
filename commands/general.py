@@ -3,7 +3,7 @@ from telegram.ext import CallbackContext, CommandHandler
 
 import bot
 from config import COMMANDS_SHEET_ID
-from spreadsheet import commands
+from google.spreadsheet import commands
 
 
 # Registers execution of certain command
@@ -52,6 +52,6 @@ def create_auto_refresh():
 # Sends Bot Commands spreadsheet link
 def send_sheet(update: Update, ctx: CallbackContext) -> None:
     response_text = (
-        f"<a href='https://docs.google.com/spreadsheets/d/{COMMANDS_SHEET_ID}" "/edit#gid=0'>Planilha de Comandos</a>"
+        f"<a href='https://docs.google.com/spreadsheets/d/{COMMANDS_SHEET_ID}/edit#gid=0'>Planilha de Comandos</a>"
     )
     send_message(update, ctx, response_text)

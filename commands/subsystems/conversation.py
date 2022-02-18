@@ -1,4 +1,4 @@
-from spreadsheet import SystemSpreadsheet
+from google.spreadsheet import SystemSpreadsheet
 
 
 # A class containing all information that may be needed in a certain conversation
