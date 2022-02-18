@@ -4,5 +4,4 @@ from config import DATABASE_URL
 
 class Connection:
     def __init__(self):
-        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-        print(conn)
+        print(DATABASE_URL)
