@@ -4,7 +4,7 @@ from json import dump
 import psycopg2
 from dotenv import load_dotenv
 
-import db.connection as connection
+import database.connection as connection
 from google.spreadsheet import SHEET_SCOPE, SHEET_AUTH_FILE, Spreadsheet, ElectricSpreadsheet
 from utils import electric_subsystems, mechanics_subsystem
 
@@ -96,7 +96,7 @@ systems = {
 Database connection
 """
 con = connection.Connection(debug=True)
-database_configuration = open("./db/default_configuration.sql").read()
+database_configuration = open("database/default_configuration.sql").read()
 try:
     con.exec_and_commit(database_configuration)
     print("\n  [!!] Default configuration loaded")
