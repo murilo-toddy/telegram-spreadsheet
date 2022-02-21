@@ -16,6 +16,7 @@ if os.path.isfile("./.env"):
     COMMANDS_SHEET_ID = os.getenv("COMMANDS_SHEET_ID")
     ELE_SHEET_ID = os.getenv("ELE_SHEET_ID")
     MEC_SHEET_ID = os.getenv("MEC_SHEET_ID")
+    REPORT_CHAT_ID = os.getenv("BOT_REPORT_CHANNEL_ID")
 
 else:
     TELEGRAM_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
@@ -23,6 +24,7 @@ else:
     COMMANDS_SHEET_ID = os.environ["COMMANDS_SHEET_ID"]
     ELE_SHEET_ID = os.environ["ELE_SHEET_ID"]
     MEC_SHEET_ID = os.environ["MEC_SHEET_ID"]
+    REPORT_CHAT_ID = os.environ["BOT_REPORT_CHANNEL_ID"]
 
 
 if not os.path.isfile("./google_client.json"):
@@ -42,7 +44,7 @@ if not os.path.isfile("./google_client.json"):
         GOOGLE_CREDS_TYPE = os.environ["GOOGLE_CREDS_TYPE"]
         GOOGLE_CREDS_PROJECT_ID = os.environ["GOOGLE_CREDS_PROJECT_ID"]
         GOOGLE_CREDS_PRIVATE_KEY_ID = os.environ["GOOGLE_CREDS_PRIVATE_KEY_ID"]
-        GOOGLE_CREDS_PRIVATE_KEY = os.environ["GOOGLE_CREDS_PRIVATE_KEY"].replace("\\\\", '\\')
+        GOOGLE_CREDS_PRIVATE_KEY = os.environ["GOOGLE_CREDS_PRIVATE_KEY"].replace("\\\\", "\\")
         GOOGLE_CREDS_EMAIL = os.environ["GOOGLE_CREDS_EMAIL"]
         GOOGLE_CREDS_CLIENT_ID = os.environ["GOOGLE_CREDS_CLIENT_ID"]
         GOOGLE_CREDS_AUTH_URI = os.environ["GOOGLE_CREDS_AUTH_URI"]
