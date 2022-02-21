@@ -15,6 +15,11 @@ def send_message(update: Update, ctx: CallbackContext, text: str) -> None:
     ctx.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=ParseMode.HTML)
 
 
+# Sends message to a specific channel
+def send_message_to(ctx: CallbackContext, id: int, text: str) -> None:
+    ctx.bot.send_message(chat_id=id, text=text, parse_mode=ParseMode.HTML)
+
+
 # Uses reply method to send message
 def reply_text(update: Update, text: str, keyboard: ReplyKeyboardMarkup = ReplyKeyboardRemove()):
     update.message.reply_text(text, parse_mode=ParseMode.HTML, reply_markup=keyboard)
