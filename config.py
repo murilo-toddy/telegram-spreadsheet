@@ -1,6 +1,7 @@
 import os
 from json import dump
 
+import psycopg2
 from dotenv import load_dotenv
 
 import db.connection as connection
@@ -94,4 +95,10 @@ systems = {
 """
 Database connection
 """
-connection.Connection(debug=True)
+con = connection.Connection(debug=True)
+database_configuration = open("./db/default_configuration.sql").read()
+try:
+    con.exec_and_commit(database_configuration)
+    print("\n  [!!] Default configuration loaded")
+except psycopg2.Error:
+    pass
