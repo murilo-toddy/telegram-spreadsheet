@@ -7,6 +7,7 @@ from telegram.ext import (
     ConversationHandler,
 )
 
+from utils import available_systems, electric_subsystems, mechanics_subsystem
 from .generic import (
     get_default_system_message,
     timeout,
@@ -14,9 +15,8 @@ from .generic import (
     load_conversation,
     get_conversation,
 )
-from ..general import log_command, reply_text
 from .generic import load_system_info, load_subsystem_info, keyboards
-from utils import available_systems, electric_subsystems, mechanics_subsystem
+from ..general import log_command, reply_text
 
 # States of conversation
 SYSTEM, SUBSYSTEM, TASK = range(3)

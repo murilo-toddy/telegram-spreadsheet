@@ -3,7 +3,6 @@ from datetime import date
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-
 SHEET_AUTH_FILE = "./google_client.json"
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1kHx2-Q3H_m3pqm7YHDmMD8SzOJMxPIIw5cwB7vVlMi0/edit#gid=1546038790"
 SHEET_SCOPE = [

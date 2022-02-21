@@ -1,11 +1,11 @@
 import os
-
-from dotenv import load_dotenv
 from json import dump
 
-from utils import electric_subsystems, mechanics_subsystem
-from google.spreadsheet import SHEET_SCOPE, SHEET_AUTH_FILE, Spreadsheet, ElectricSpreadsheet
+from dotenv import load_dotenv
+
 import db.connection as connection
+from google.spreadsheet import SHEET_SCOPE, SHEET_AUTH_FILE, Spreadsheet, ElectricSpreadsheet
+from utils import electric_subsystems, mechanics_subsystem
 
 # File responsible for loading sensitive variables
 if os.path.isfile("./.env"):
