@@ -30,7 +30,7 @@ class Connection:
         if self.__debug:
             print("\n  [!] Connected to database")
             self.cursor.execute("SELECT version()")
-            print(f"  [!!] {self.cursor.fetchone()}")
+            print(f"  [!!] {self.cursor.fetchone()[0].split(',')[0]}")
 
     # Finishes connection
     def disconnect(self) -> None:
