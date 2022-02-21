@@ -13,7 +13,7 @@ from telegram.ext import (
 )
 from unidecode import unidecode
 
-from google.spreadsheet import systems
+from config import systems
 from .generic import get_default_system_message, timeout, cancel, load_conversation, get_conversation
 from ..general import log_command
 
@@ -32,6 +32,7 @@ from ..general import log_command
 
 
 # TODO extract all message sending commands to generic file
+# TODO remove bare except
 def add_task(update: Update, ctx: CallbackContext) -> int:
     log_command("register task")
     load_conversation(update)

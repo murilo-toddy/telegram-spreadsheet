@@ -1,7 +1,7 @@
 from telegram import Update, ParseMode, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext
 
-from google.spreadsheet import systems
+from config import systems
 from .generic import get_task_lister_text
 from ..general import send_message, log_command
 

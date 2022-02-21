@@ -84,6 +84,7 @@ def task_starter(update: Update, ctx: CallbackContext) -> int:
         task_row = [row for row in conversation.tasks.split("\n") if row.startswith(f"{task}")][0]
         task_name = task_row.split(" - ")[1]
         conversation.task = task_name
+    # Update bare except
     except:
         # Task is invalid
         update.message.reply_text("Forneça um número válido")

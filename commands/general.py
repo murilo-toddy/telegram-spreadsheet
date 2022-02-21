@@ -2,8 +2,7 @@ from telegram import Update, ParseMode, ReplyKeyboardRemove, ReplyKeyboardMarkup
 from telegram.ext import CallbackContext, CommandHandler
 
 import bot
-from config import COMMANDS_SHEET_ID
-from google.spreadsheet import commands
+from config import COMMANDS_SHEET_ID, commands
 
 
 # Registers execution of certain command

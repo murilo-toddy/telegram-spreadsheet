@@ -1,7 +1,7 @@
 from telegram import ReplyKeyboardRemove, Update, ReplyKeyboardMarkup
 from telegram.ext import CallbackContext, ConversationHandler
 
-from google.spreadsheet import systems
+from config import systems
 from utils import available_systems, electric_subsystems, mechanics_subsystem
 from .conversation import Conversation
 from ..general import reply_text
