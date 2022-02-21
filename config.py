@@ -8,6 +8,8 @@ import database.connection as connection
 from google.spreadsheet import SHEET_SCOPE, SHEET_AUTH_FILE, Spreadsheet, ElectricSpreadsheet
 from utils import electric_subsystems, mechanics_subsystem
 
+RELOAD_DATABASE = True
+
 # File responsible for loading sensitive variables
 if os.path.isfile("./.env"):
     load_dotenv()
@@ -99,8 +101,11 @@ Database connection
 """
 con = connection.Connection(debug=True)
 database_configuration = open("database/default_configuration.sql").read()
+if RELOAD_DATABASE:
+    con.exec_and_commit("DROP SCHEMA public CASCADE;")
+    con.exec_and_commit("CREATE SCHEMA public;")
 try:
     con.exec_and_commit(database_configuration)
-    print("\n  [!!] Default configuration loaded")
+    print("  [!!] Default configuration loaded")
 except psycopg2.Error:
     pass
