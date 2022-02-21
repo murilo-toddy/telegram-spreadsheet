@@ -3,6 +3,10 @@ import os
 from dotenv import load_dotenv
 from json import dump
 
+from utils import electric_subsystems, mechanics_subsystem
+from google.spreadsheet import SHEET_SCOPE, SHEET_AUTH_FILE, Spreadsheet, ElectricSpreadsheet
+import db.connection as connection
+
 # File responsible for loading sensitive variables
 if os.path.isfile("./.env"):
     load_dotenv()
@@ -61,3 +65,33 @@ if not os.path.isfile("./google_client.json"):
     with open("./google_client.json", "w") as f:
         dump(google_credentials, f, indent=4)
         print("\n  [!] Google config file created")
+
+
+"""
+Spreadsheet Connection
+"""
+# Commands spreadsheet
+commands: Spreadsheet = Spreadsheet(COMMANDS_SHEET_ID, SHEET_SCOPE, SHEET_AUTH_FILE, True)
+commands.add_sheet("cmd", 0)
+
+# Electric Spreadsheet
+electric_ss: ElectricSpreadsheet = ElectricSpreadsheet(ELE_SHEET_ID, SHEET_SCOPE, SHEET_AUTH_FILE, True)
+for subsystem, info in electric_subsystems.items():
+    electric_ss.add_sheet(subsystem, info["worksheet_id"])
+
+# Mec Spreadsheet
+# TODO determine how mechanics spreadsheet is going to work
+mechanics_ss: Spreadsheet = Spreadsheet(MEC_SHEET_ID, SHEET_SCOPE, SHEET_AUTH_FILE, True)
+# for subsystem, info in mechanics_subsystem.items():
+#     mechanics_ss.add_sheet(subsystem, info["worksheet_id"])
+
+# All systems and their relevant information
+systems = {
+    "ele": {"ss": electric_ss, "sub": electric_subsystems},
+    "mec": {"ss": mechanics_ss, "sub": mechanics_subsystem},
+}
+
+"""
+Database connection
+"""
+connection.Connection(debug=True)
