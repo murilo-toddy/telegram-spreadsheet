@@ -1,6 +1,6 @@
 CREATE TABLE report (
-    author      VARCHAR(20),
-    command     VARCHAR(10),
-    message     VARCHAR(30),
+    author      VARCHAR(25),
+    command     VARCHAR(15),
+    message     VARCHAR(50),
     fixed       BOOLEAN
 );
