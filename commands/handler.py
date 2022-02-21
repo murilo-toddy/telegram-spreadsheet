@@ -2,6 +2,7 @@ from telegram.ext import CommandHandler, CallbackQueryHandler
 
 import commands.general as general
 import commands.help as help_cmd
+import commands.report as report
 import commands.subsystems.task_conclude as task_conclude
 import commands.subsystems.task_list as task_list
 import commands.subsystems.task_register as task_register
@@ -12,6 +13,7 @@ from config import commands
 # Registers command and callback handlers into bot
 def register_commands(dsp) -> None:
     dsp.add_handler(CommandHandler("help", help_cmd.help_command))
+    dsp.add_handler(CommandHandler("report", report.report_command))
 
     dsp.add_handler(CommandHandler("list", task_list.subsystem_task_lister))
 
