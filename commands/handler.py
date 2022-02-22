@@ -2,17 +2,18 @@ from telegram.ext import CommandHandler, CallbackQueryHandler
 
 import commands.general as general
 import commands.help as help_cmd
+import commands.report as report
 import commands.subsystems.task_conclude as task_conclude
 import commands.subsystems.task_list as task_list
 import commands.subsystems.task_register as task_register
 import commands.subsystems.task_start as task_start
-from google.spreadsheet import commands
-from db.connection import Connection
+from config import commands
 
 
 # Registers command and callback handlers into bot
 def register_commands(dsp) -> None:
     dsp.add_handler(CommandHandler("help", help_cmd.help_command))
+    dsp.add_handler(CommandHandler("report", report.report_command))
 
     dsp.add_handler(CommandHandler("list", task_list.subsystem_task_lister))
 
@@ -28,6 +29,5 @@ def register_commands(dsp) -> None:
     for cmd in commands.sheet("cmd").get_all_values()[1:]:
         dsp.add_handler(CommandHandler(command=cmd[0], callback=general.spreadsheet_return_text))
 
-    con = Connection()
     general.create_auto_refresh()
     print("\n  [!] Commands loaded")

@@ -37,6 +37,18 @@ available_commands = {
             "para atualizar os comandos internos do Bot."
         ),
     ),
+    "report": _create_command_dict(
+        category="Geral",
+        short_description="Reporte comandos ou problemas no bot",
+        full_description=(
+            "Permite que o usuário informe os desenvolvedores a respeito de problemas no bot\n\n"
+            "Ao enviar um report, sua reclamação será salva em um banco de dados para que seja analisada "
+            "pelos responsáveis. Só é necessário reportar um problema <b>uma vez</b>\n\n"
+            "Para reportar um novo problema, utilize <code>/report [comando] problema</code>\n"
+            "É importante ressaltar que o comando deve ser exatamente como apresentado no <code>/help</code>\n\n"
+            "Fique atento aos <i>patch notes</i> do bot para saber das ultimas atualizações."
+        )
+    ),
     "list": _create_command_dict(
         category="Subsistemas",
         short_description="Lista as tarefas de um subsistema",

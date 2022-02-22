@@ -3,9 +3,6 @@ from datetime import date
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-from config import COMMANDS_SHEET_ID, ELE_SHEET_ID, MEC_SHEET_ID
-from utils import electric_subsystems, mechanics_subsystem
-
 SHEET_AUTH_FILE = "./google_client.json"
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1kHx2-Q3H_m3pqm7YHDmMD8SzOJMxPIIw5cwB7vVlMi0/edit#gid=1546038790"
 SHEET_SCOPE = [
@@ -112,10 +109,7 @@ class ElectricSpreadsheet(SystemSpreadsheet):
     # Returns project index in spreadsheet
     @staticmethod
     def __find_project_index(proj, data) -> int:
-        for index, p in enumerate(data):
-            if p[0] == proj:
-                return index + 1
-        return -1
+        return next((index + 1 for index, p in enumerate(data) if p[0] == proj), -1)
 
     @staticmethod
     def register_task(user_data) -> None:
@@ -153,25 +147,3 @@ class ElectricSpreadsheet(SystemSpreadsheet):
         # Updates status and returns
         ss.update_acell(f"C{index + 1}", "Fazendo")
         ss.update_acell(f"D{index + 1}", date.today().strftime("%d/%m/%Y"))
-
-
-# Commands spreadsheet
-commands: Spreadsheet = Spreadsheet(COMMANDS_SHEET_ID, SHEET_SCOPE, SHEET_AUTH_FILE, True)
-commands.add_sheet("cmd", 0)
-
-# Electric Spreadsheet
-electric_ss: ElectricSpreadsheet = ElectricSpreadsheet(ELE_SHEET_ID, SHEET_SCOPE, SHEET_AUTH_FILE, True)
-for subsystem, info in electric_subsystems.items():
-    electric_ss.add_sheet(subsystem, info["worksheet_id"])
-
-# Mec Spreadsheet
-# TODO determine how mechanics spreadsheet is going to work
-mechanics_ss: Spreadsheet = Spreadsheet(MEC_SHEET_ID, SHEET_SCOPE, SHEET_AUTH_FILE, True)
-# for subsystem, info in mechanics_subsystem.items():
-#     mechanics_ss.add_sheet(subsystem, info["worksheet_id"])
-
-# All systems and their relevant information
-systems = {
-    "ele": {"ss": electric_ss, "sub": electric_subsystems},
-    "mec": {"ss": mechanics_ss, "sub": mechanics_subsystem},
-}

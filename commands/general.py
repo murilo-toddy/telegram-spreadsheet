@@ -2,8 +2,7 @@ from telegram import Update, ParseMode, ReplyKeyboardRemove, ReplyKeyboardMarkup
 from telegram.ext import CallbackContext, CommandHandler
 
 import bot
-from config import COMMANDS_SHEET_ID
-from google.spreadsheet import commands
+from config import COMMANDS_SHEET_ID, commands
 
 
 # Registers execution of certain command
@@ -14,6 +13,11 @@ def log_command(cmd: str) -> None:
 # Default message sending method, using HTML format
 def send_message(update: Update, ctx: CallbackContext, text: str) -> None:
     ctx.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=ParseMode.HTML)
+
+
+# Sends message to a specific channel
+def send_message_to(ctx: CallbackContext, id: int, text: str) -> None:
+    ctx.bot.send_message(chat_id=id, text=text, parse_mode=ParseMode.HTML)
 
 
 # Uses reply method to send message

@@ -1,7 +1,7 @@
 from telegram import ReplyKeyboardRemove, Update, ReplyKeyboardMarkup
 from telegram.ext import CallbackContext, ConversationHandler
 
-from google.spreadsheet import systems
+from config import systems
 from utils import available_systems, electric_subsystems, mechanics_subsystem
 from .conversation import Conversation
 from ..general import reply_text
@@ -79,7 +79,7 @@ def get_task_lister_text(system: str, subsystem: str) -> str:
         if data[i][0]:
             tasks, pos, counter = get_subtasks(data, i, counter)
             if tasks:
-                string += f"\n<i>{data[i][0]}</i>\n" + tasks
+                string += f'\n<i>{data[i][0]}</i>\n{tasks}'
             i = pos
     return string
 
