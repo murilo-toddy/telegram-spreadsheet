@@ -8,7 +8,7 @@ import database.connection as connection
 from google.spreadsheet import SHEET_SCOPE, SHEET_AUTH_FILE, Spreadsheet, ElectricSpreadsheet
 from utils import electric_subsystems, mechanics_subsystem
 
-RELOAD_DATABASE = True
+RELOAD_DATABASE = False
 
 # File responsible for loading sensitive variables
 if os.path.isfile("./.env"):
@@ -73,7 +73,7 @@ if not os.path.isfile("./google_client.json"):
 
 
 """
-Spreadsheet Connection
+Spreadsheet connection
 """
 # Commands spreadsheet
 commands: Spreadsheet = Spreadsheet(COMMANDS_SHEET_ID, SHEET_SCOPE, SHEET_AUTH_FILE, True)
@@ -101,6 +101,7 @@ Database connection
 """
 con = connection.Connection(debug=True)
 database_configuration = open("database/default_configuration.sql").read()
+
 if RELOAD_DATABASE:
     con.exec_and_commit("DROP SCHEMA public CASCADE;")
     con.exec_and_commit("CREATE SCHEMA public;")
