@@ -79,7 +79,7 @@ def get_task_lister_text(system: str, subsystem: str) -> str:
         if data[i][0]:
             tasks, pos, counter = get_subtasks(data, i, counter)
             if tasks:
-                string += f"\n<i>{data[i][0]}</i>\n" + tasks
+                string += f'\n<i>{data[i][0]}</i>\n{tasks}'
             i = pos
     return string
 
