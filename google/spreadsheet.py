@@ -109,10 +109,7 @@ class ElectricSpreadsheet(SystemSpreadsheet):
     # Returns project index in spreadsheet
     @staticmethod
     def __find_project_index(proj, data) -> int:
-        for index, p in enumerate(data):
-            if p[0] == proj:
-                return index + 1
-        return -1
+        return next((index + 1 for index, p in enumerate(data) if p[0] == proj), -1)
 
     @staticmethod
     def register_task(user_data) -> None:
@@ -150,5 +147,3 @@ class ElectricSpreadsheet(SystemSpreadsheet):
         # Updates status and returns
         ss.update_acell(f"C{index + 1}", "Fazendo")
         ss.update_acell(f"D{index + 1}", date.today().strftime("%d/%m/%Y"))
-
-
