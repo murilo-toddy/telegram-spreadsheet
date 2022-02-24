@@ -3,6 +3,5 @@ oauth2client
 python-dotenv
 python-telegram-bot
 Unidecode
-telegram
 psycopg2
 psycopg2-binary
