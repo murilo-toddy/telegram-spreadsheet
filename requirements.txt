@@ -1,4 +1,6 @@
 gspread
+python-dev
+libpq-dev
 oauth2client
 python-dotenv
 python-telegram-bot
