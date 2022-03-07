@@ -24,7 +24,7 @@ def task_lister(update: Update, ctx: CallbackContext, args: list[str]) -> None:
     if sub == "ele":
         # Electric subsystems lister
         subsystems = [
-            [__create_keyboard("Baterias", "list bt"), __create_keyboard("Powertrain", "list pt")],
+            [__create_keyboard("Baterias", "list bat"), __create_keyboard("Powertrain", "list pt")],
             [__create_keyboard("Hardware", "list hw"), __create_keyboard("Software", "list sw")],
         ]
         reply_message_text = (
